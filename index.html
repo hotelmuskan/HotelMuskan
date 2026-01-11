@@ -6,230 +6,208 @@
     <title>Hotel Muskan POS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root { --gold: #d4af37; --dark: #0a0a0a; --card: #161616; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--dark); color: white; margin: 0; padding-bottom: 70px; }
+        :root { --gold: #d4af37; --dark: #050505; --card: #121212; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding-bottom: 70px; }
         
-        /* Header */
-        .header { text-align: center; padding: 20px; border-bottom: 2px solid var(--gold); background: #000; }
-        .header h1 { margin: 0; color: var(--gold); letter-spacing: 2px; font-size: 24px; }
-        .header p { margin: 5px 0 0; font-size: 10px; color: #888; }
+        .header { text-align: center; padding: 15px; border-bottom: 2px solid var(--gold); background: #000; }
+        .header h1 { margin: 0; color: var(--gold); font-size: 22px; letter-spacing: 2px; }
+        .header p { margin: 3px 0 0; font-size: 11px; font-style: italic; color: var(--gold); }
 
-        /* Tabs */
-        .tab-btn-container { display: flex; background: #111; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #333; }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; }
+        .tab-nav { display: flex; background: #111; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; color: #777; font-weight: bold; cursor: pointer; }
         .tab-btn.active { color: var(--gold); border-bottom: 3px solid var(--gold); }
 
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .page { display: none; padding: 10px; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Menu Grid */
-        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .menu-item { background: var(--card); border: 1px solid #333; padding: 12px; border-radius: 12px; text-align: center; }
-        .menu-item b { display: block; font-size: 13px; margin-bottom: 5px; min-height: 32px; }
-        .btn-group { display: flex; gap: 5px; }
-        .btn-sm { flex: 1; padding: 8px 0; font-size: 10px; border: 1px solid var(--gold); background: none; color: var(--gold); border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .btn-sm:active { background: var(--gold); color: black; }
+        /* Menu System */
+        .category-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; scrollbar-width: none; }
+        .category-scroll::-webkit-scrollbar { display: none; }
+        .cat-tag { background: #222; padding: 8px 15px; border-radius: 20px; font-size: 12px; white-space: nowrap; border: 1px solid #444; }
+        .cat-tag.active { background: var(--gold); color: black; border-color: var(--gold); }
+
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .menu-item { background: var(--card); border: 1px solid #222; padding: 10px; border-radius: 12px; text-align: center; }
+        .menu-item b { display: block; font-size: 12px; min-height: 30px; margin-bottom: 5px; }
+        .btn-add { width: 100%; padding: 8px; background: none; border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; font-weight: bold; font-size: 11px; }
 
         /* Invoice */
-        .invoice-box { background: white; color: black; padding: 20px; border-radius: 5px; margin-top: 10px; }
-        .bill-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ddd; font-size: 14px; }
-        .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 20px; margin-top: 15px; padding-top: 10px; border-top: 2px solid #000; }
+        .invoice { background: white; color: black; padding: 20px; border-radius: 4px; margin-top: 10px; }
+        .invoice-h { text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .bill-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed #eee; font-size: 13px; }
+        .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 20px; margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
         
-        /* Inputs */
-        .input-field { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
+        #qrcode { margin: 15px auto; width: 128px; }
+        .input-box { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
+        .action-btn { width: 100%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; margin-top: 10px; font-size: 14px; }
 
-        /* Buttons */
-        .action-btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; }
-        .bg-gold { background: var(--gold); color: black; }
-        .bg-wa { background: #25D366; color: white; }
-
-        #qrcode { margin: 15px auto; width: 150px; height: 150px; background: white; padding: 10px; }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; color: black; }
-            .invoice-box { border: none; width: 100%; }
-        }
+        @media print { .no-print { display: none !important; } body { background: white; color: black; } .invoice { width: 100%; margin: 0; } }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h1>HOTEL MUSKAN</h1>
-    <p>A taste you'll remember | Bhagwanpur Overbridge</p>
+    <p>"A taste you'll remember"</p>
 </div>
 
-<div class="tab-btn-container no-print">
-    <button class="tab-btn active" onclick="showPage('menu', this)">MENU</button>
-    <button class="tab-btn" onclick="showPage('bill', this)">BILL</button>
-    <button class="tab-btn" onclick="showPage('admin', this)">ADMIN</button>
+<div class="tab-nav no-print">
+    <button class="tab-btn active" onclick="openPage('menu', this)">MENU</button>
+    <button class="tab-btn" onclick="openPage('bill', this)">BILL</button>
+    <button class="tab-btn" onclick="openPage('admin', this)">ADMIN</button>
 </div>
 
 <div id="menu" class="page active no-print">
-    <div class="menu-grid" id="menu-container"></div>
+    <div class="category-scroll" id="cat-list"></div>
+    <div class="menu-grid" id="menu-grid"></div>
 </div>
 
 <div id="bill" class="page">
     <div class="no-print">
-        <input type="text" id="cust-name" class="input-field" placeholder="Customer Name">
-        <input type="number" id="cust-phone" class="input-field" placeholder="WhatsApp Number">
+        <input type="text" id="cust-name" class="input-box" placeholder="Customer Name">
+        <input type="number" id="cust-phone" class="input-box" placeholder="WhatsApp Number">
     </div>
 
-    <div class="invoice-box" id="print-area">
-        <div style="text-align: center;">
+    <div class="invoice">
+        <div class="invoice-h">
             <h2 style="margin:0;">HOTEL MUSKAN</h2>
-            <small>Bhagwanpur Overbridge, Near Overbridge</small><br>
-            <small id="bill-date"></small>
+            <small>Bhagwanpur Overbridge</small><br>
+            <small id="date-time"></small>
         </div>
-        <hr>
-        <div id="bill-items-list"></div>
-        <div class="total-row">
-            <span>TOTAL</span>
-            <span id="grand-total">₹0</span>
-        </div>
+        <div id="bill-items"></div>
+        <div class="total-row"><span>TOTAL</span><span id="grand-total">₹0</span></div>
         <div id="qrcode"></div>
-        <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 10px;">
-            A taste you'll remember - Scan to Pay
-        </div>
+        <div style="text-align:center; font-size:10px; font-weight:bold;">A taste you'll remember</div>
     </div>
 
     <div class="no-print">
-        <button class="action-btn bg-gold" onclick="printBill()">PRINT BILL</button>
-        <button class="action-btn bg-wa" onclick="whatsappBill()">WHATSAPP BILL</button>
+        <button class="action-btn" style="background:var(--gold)" onclick="printBill()">PRINT & SETTLE</button>
+        <button class="action-btn" style="background:#25D366; color:white" onclick="shareWA()">WHATSAPP BILL</button>
     </div>
 </div>
 
 <div id="admin" class="page no-print">
-    <h3>Table Management</h3>
-    <div id="table-selection" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
-    <div style="margin-top: 30px; background: #111; padding: 20px; border-radius: 10px; border: 1px solid var(--gold);">
-        <p>Today's Total Revenue</p>
-        <h2 id="revenue-total" style="color: var(--gold); margin:0;">₹0</h2>
+    <h3>Switch Table</h3>
+    <div id="tables-map" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;"></div>
+    <div style="margin-top:20px; padding:20px; background:var(--card); border:1px solid var(--gold); border-radius:10px;">
+        <p>Total Shift Revenue</p>
+        <h2 id="revenue-val" style="color:var(--gold); margin:0;">₹0</h2>
     </div>
 </div>
 
 <script>
     const upiID = "ajaykumar2569563@ybl";
-    let currentTable = 1;
-    let shiftRevenue = 0;
+    let currentT = 1;
+    let totalSales = 0;
     let tables = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
 
-    const menuData = [
-      "🫓 Breads": [
-            { name: "Plain Roti", price: 7 }, { name: "Butter Roti", price: 10 },
-            { name: "Tandoori Roti", price: 10 }, { name: "Plain Naan", price: 25 },
-            { name: "Butter Naan", price: 30 }, { name: "Garlic Naan", price: 40 }
+    const menu = {
+        "🫓 Breads": [
+            {n:"Plain Roti", p:7}, {n:"Butter Roti", p:10}, {n:"Tandoori Roti", p:10},
+            {n:"Plain Naan", p:25}, {n:"Butter Naan", p:30}, {n:"Garlic Naan", p:40}
         ],
         "🍚 Rice & Biryani": [
-            { name: "Plain Rice", price: 70, half: 40 }, { name: "Jeera Rice", price: 70, half: 40 },
-            { name: "Veg Biryani", price: 120, half: 70 }, { name: "Chicken Biryani", price: 160, half: 90 },
-            { name: "Mutton Biryani", price: 220, half: 120 }
+            {n:"Plain Rice", p:50}, {n:"Jeera Rice", p:70}, {n:"Veg Pulao", p:90},
+            {n:"Veg Biryani", p:120}, {n:"Chicken Biryani", p:160}, {n:"Mutton Biryani", p:220}
         ],
         "🥦 Veg Main": [
-            { name: "Dal Fry", price: 140, half: 70 }, { name: "Dal Tadka", price: 140, half: 70 },
-            { name: "Paneer Butter Masala", price: 140, half: 80 }, { name: "Mix Veg", price: 100, half: 60 }
+            {n:"Dal Fry", p:80}, {n:"Dal Tadka", p:100}, {n:"Aloo Gobi", p:90},
+            {n:"Mix Veg", p:100}, {n:"Paneer Butter", p:140}, {n:"Shahi Paneer", p:150}
         ],
-        "🍗 Non-Veg Main": [
-            { name: "Chicken Curry", price: 140, half: 80 }, { name: "Chicken Butter Masala", price: 160, half: 90 },
-            { name: "Mutton Curry", price: 220, half: 120 }
+        "🍗 Non-Veg": [
+            {n:"Egg Curry", p:90}, {n:"Chicken Curry", p:140}, {n:"Chicken Butter", p:160},
+            {n:"Fish Curry", p:170}, {n:"Mutton Curry", p:220}
         ],
         "🍟 Starters": [
-            { name: "Veg Manchurian", price: 120, half: 70 }, { name: "Chicken Chilli", price: 150, half: 90 }
+            {n:"Veg Pakora", p:60}, {n:"Paneer Pakora", p:100}, {n:"Veg Manchurian", p:120}, {n:"Chicken Chilli", p:150}
         ],
-        "🥤 Beverages": [
-            { name: "Mineral Water", price: 20 }, { name: "Tea", price: 15 }, { name: "Cold Drink", price: 40 }
+        "🥤 Drinks": [
+            {n:"Mineral Water", p:20}, {n:"Tea", p:15}, {n:"Coffee", p:25}, {n:"Cold Drink", p:40}
         ]
-    ];
+    };
 
-    function showPage(pageId, btn) {
+    function openPage(id, btn) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
+        document.getElementById(id).classList.add('active');
         btn.classList.add('active');
-        if(pageId === 'bill') renderBill();
+        if(id==='bill') renderBill();
     }
 
     function init() {
-        const container = document.getElementById('menu-container');
-        menuData.forEach((item, index) => {
-            let buttons = `<button class="btn-sm" onclick="add('${item.name}', ${item.price})">FULL (₹${item.price})</button>`;
-            if(item.half) {
-                buttons = `<button class="btn-sm" onclick="add('${item.name} (H)', ${item.half})">HALF (₹${item.half})</button>` + buttons;
-            }
-            container.innerHTML += `<div class="menu-item"><b>${item.name}</b><div class="btn-group">${buttons}</div></div>`;
-        });
+        const catBox = document.getElementById('cat-list');
+        for(let cat in menu) {
+            catBox.innerHTML += `<div class="cat-tag" onclick="filterMenu('${cat}', this)">${cat}</div>`;
+        }
+        filterMenu("🫓 Breads", document.querySelector('.cat-tag'));
         renderTables();
     }
 
-    function add(name, price) {
-        tables[currentTable].push({ name, price });
-        alert(name + " added to Table " + currentTable);
+    function filterMenu(cat, el) {
+        document.querySelectorAll('.cat-tag').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        const grid = document.getElementById('menu-grid');
+        grid.innerHTML = '';
+        menu[cat].forEach(item => {
+            grid.innerHTML += `<div class="menu-item"><b>${item.n}</b><button class="btn-add" onclick="addItem('${item.n}', ${item.p})">ADD ₹${item.p}</button></div>`;
+        });
+    }
+
+    function addItem(n, p) {
+        tables[currentT].push({n, p});
+        new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3').play();
     }
 
     function renderBill() {
-        const list = document.getElementById('bill-items-list');
-        const totalEl = document.getElementById('grand-total');
-        const dateEl = document.getElementById('bill-date');
-        list.innerHTML = '';
+        const box = document.getElementById('bill-items');
+        const dateBox = document.getElementById('date-time');
+        box.innerHTML = '';
         let total = 0;
+        let summary = {};
 
-        // Grouping items to show quantity
-        let counts = {};
-        tables[currentTable].forEach(item => {
-            counts[item.name] = (counts[item.name] || { qty: 0, price: item.price });
-            counts[item.name].qty++;
+        tables[currentT].forEach(item => {
+            summary[item.n] = (summary[item.n] || {qty:0, p:item.p});
+            summary[item.n].qty++;
         });
 
-        for (let name in counts) {
-            let itemTotal = counts[name].qty * counts[name].price;
-            total += itemTotal;
-            list.innerHTML += `<div class="bill-row"><span>${counts[name].qty} x ${name}</span><span>₹${itemTotal}</span></div>`;
+        for(let n in summary) {
+            let lineTotal = summary[n].qty * summary[n].p;
+            total += lineTotal;
+            box.innerHTML += `<div class="bill-row"><span>${summary[n].qty} x ${n}</span><span>₹${lineTotal}</span></div>`;
         }
 
-        totalEl.innerText = '₹' + total;
-        dateEl.innerText = new Date().toLocaleString();
-
-        const qrContainer = document.getElementById("qrcode");
-        qrContainer.innerHTML = "";
-        if(total > 0) {
-            new QRCode(qrContainer, { text: `upi://pay?pa=${upiID}&am=${total}&cu=INR`, width: 128, height: 128 });
-        }
+        document.getElementById('grand-total').innerText = '₹' + total;
+        dateBox.innerText = new Date().toLocaleString();
+        
+        const qr = document.getElementById("qrcode");
+        qr.innerHTML = "";
+        if(total > 0) new QRCode(qr, {text: `upi://pay?pa=${upiID}&am=${total}&cu=INR`, width: 128, height: 128});
     }
 
     function renderTables() {
-        const container = document.getElementById('table-selection');
-        container.innerHTML = '';
+        const map = document.getElementById('tables-map');
+        map.innerHTML = '';
         for(let i=1; i<=6; i++) {
-            container.innerHTML += `<button class="tab-btn" style="background:#222; margin:5px; border-radius:10px; color:${i==currentTable?'var(--gold)':'white'}" onclick="setTable(${i})">Table ${i}</button>`;
+            map.innerHTML += `<button onclick="setT(${i})" style="padding:15px; background:${i==currentT? 'var(--gold)':'#222'}; color:${i==currentT? 'black':'white'}; border:none; border-radius:10px;">Table ${i}</button>`;
         }
     }
 
-    function setTable(n) {
-        currentTable = n;
-        renderTables();
-        alert("Switched to Table " + n);
-    }
+    function setT(i) { currentT = i; renderTables(); alert("Switched to T-"+i); }
 
-    function whatsappBill() {
-        const phone = document.getElementById('cust-phone').value;
-        if(!phone) return alert("Please enter phone number");
-        let text = `*HOTEL MUSKAN*%0A------------------%0A`;
-        let total = 0;
-        tables[currentTable].forEach(i => {
-            text += `${i.name} - ₹${i.price}%0A`;
-            total += i.price;
-        });
-        text += `------------------%0A*Total: ₹${total}*%0A_A taste you'll remember_`;
-        window.open(`https://wa.me/91${phone}?text=${text}`);
+    function shareWA() {
+        const ph = document.getElementById('cust-phone').value;
+        if(!ph) return alert("Enter Phone");
+        let txt = `*HOTEL MUSKAN*%0A------------------%0A`;
+        tables[currentT].forEach(i => txt += `${i.n} - ₹${i.p}%0A`);
+        txt += `------------------%0A*Total: ${document.getElementById('grand-total').innerText}*%0A_Visit Again!_`;
+        window.open(`https://wa.me/91${ph}?text=${txt}`);
     }
 
     function printBill() {
-        const total = parseInt(document.getElementById('grand-total').innerText.replace('₹',''));
-        shiftRevenue += total;
-        document.getElementById('revenue-total').innerText = '₹' + shiftRevenue;
+        totalSales += parseInt(document.getElementById('grand-total').innerText.replace('₹',''));
+        document.getElementById('revenue-val').innerText = '₹' + totalSales;
         window.print();
-        tables[currentTable] = [];
+        tables[currentT] = [];
         renderBill();
     }
 
