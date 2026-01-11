@@ -29,7 +29,6 @@
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
         .menu-item { background: var(--card); border: 1px solid #222; padding: 10px; border-radius: 12px; text-align: center; }
         .menu-item b { display: block; font-size: 12px; min-height: 30px; margin-bottom: 8px; }
-        
         .btn-add { width: 100%; padding: 8px 0; background: none; border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; font-weight: bold; font-size: 10px; cursor: pointer; }
 
         /* Luxury Invoice Design */
@@ -68,7 +67,6 @@
 <div id="bill" class="page">
     <div class="no-print">
         <input type="text" id="cust-name-input" class="input-box" placeholder="Customer Name" oninput="updateCustInfo()">
-        <input type="number" id="cust-phone-input" class="input-box" placeholder="WhatsApp Number" oninput="updateCustInfo()">
     </div>
 
     <div class="invoice-container" id="capture-area">
@@ -81,7 +79,6 @@
             
             <div id="display-cust-info" style="margin-bottom: 10px;">
                 <div class="cust-info-row"><span>Customer:</span> <span id="bill-cust-name">---</span></div>
-                <div class="cust-info-row"><span>Phone:</span> <span id="bill-cust-phone">---</span></div>
             </div>
 
             <div id="bill-items"></div>
@@ -93,7 +90,7 @@
 
     <div class="no-print">
         <button class="action-btn" style="background:var(--gold)" onclick="printBill()">PRINT & SETTLE</button>
-        <button class="action-btn" style="background:#25D366; color:white" onclick="directWhatsApp()">DIRECT WHATSAPP</button>
+        <button class="action-btn" style="background:#25D366; color:white" onclick="shareImageBill()">SEND WHATSAPP IMAGE</button>
     </div>
 </div>
 
@@ -110,7 +107,7 @@
     let currentT = 1, totalSales = 0, tables = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
 
     const menu = {
-       "🫓 Breads": [
+      "🫓 Breads": [
             {n:"Plain Roti", p:7}, {n:"Butter Roti", p:10}, {n:"Tandoori Roti", p:10},
             {n:"Plain Naan", p:25}, {n:"Butter Naan", p:30}, {n:"Garlic Naan", p:40}
         ],
@@ -160,7 +157,6 @@
 
     function updateCustInfo() {
         document.getElementById('bill-cust-name').innerText = document.getElementById('cust-name-input').value || '---';
-        document.getElementById('bill-cust-phone').innerText = document.getElementById('cust-phone-input').value || '---';
     }
 
     function renderBill() {
@@ -180,37 +176,39 @@
 
     function setT(i) { currentT = i; renderTables(); }
 
-    async function directWhatsApp() {
-        const phone = document.getElementById('cust-phone-input').value;
-        const name = document.getElementById('cust-name-input').value || 'Guest';
-        if(!phone) return alert("Please enter Phone Number");
-
-        // 1. Capture and Download Image (for history)
+    async function shareImageBill() {
+        const name = document.getElementById('cust-name-input').value || 'Customer';
         const area = document.getElementById('capture-area');
-        const canvas = await html2canvas(area, { scale: 2 });
-        const imgData = canvas.toDataURL("image/png");
-        const link = document.createElement('a');
-        link.download = `Muskan_Bill_${name}.png`;
-        link.href = imgData;
-        link.click();
-
-        // 2. Open WhatsApp for the Specific Phone Number
-        let text = `*HOTEL MUSKAN - Bill*%0ACustomer: ${name}%0A------------------%0A`;
-        let total = 0;
-        tables[currentT].forEach(i => {
-            text += `${i.n} - ₹${i.p}%0A`;
-            total += i.p;
-        });
-        text += `------------------%0A*Total: ₹${total}*%0A_Visit Again!_`;
         
-        // This opens the EXACT contact directly
-        window.location.href = `whatsapp://send?phone=91${phone}&text=${text}`;
+        // Take screenshot of the luxury bill
+        const canvas = await html2canvas(area, { scale: 3, useCORS: true });
+        
+        canvas.toBlob(async (blob) => {
+            const file = new File([blob], `HotelMuskan_${name}.png`, { type: "image/png" });
+            
+            // Check if device supports file sharing
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Hotel Muskan Bill',
+                        text: `Bill for ${name} from Hotel Muskan`
+                    });
+                } catch (error) {
+                    console.log('Share failed:', error);
+                }
+            } else {
+                alert("Your browser does not support direct image sharing. Please take a screenshot.");
+            }
+        });
     }
 
     function printBill() {
         totalSales += parseInt(document.getElementById('grand-total').innerText.replace('₹',''));
         document.getElementById('revenue-val').innerText = '₹' + totalSales;
         window.print();
+        tables[currentT] = [];
+        renderBill();
     }
 
     init();
