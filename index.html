@@ -30,12 +30,11 @@
         .menu-item { background: var(--card); border: 1px solid #222; padding: 10px; border-radius: 12px; text-align: center; }
         .menu-item b { display: block; font-size: 12px; min-height: 30px; margin-bottom: 8px; }
         
-        .portion-group { display: flex; gap: 5px; }
-        .btn-add { flex: 1; padding: 8px 0; background: none; border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; font-weight: bold; font-size: 10px; cursor: pointer; }
+        .btn-add { width: 100%; padding: 8px 0; background: none; border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; font-weight: bold; font-size: 10px; cursor: pointer; }
 
         /* Luxury Invoice Design */
         .invoice-container { padding: 10px; background: #000; }
-        .invoice { background: white; color: black; padding: 25px; border-radius: 0px; border: 2px solid var(--gold); }
+        .invoice { background: white; color: black; padding: 25px; border: 2px solid var(--gold); }
         .invoice-h { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
         .cust-info-row { font-size: 12px; font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         .bill-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ccc; font-size: 14px; }
@@ -69,7 +68,7 @@
 <div id="bill" class="page">
     <div class="no-print">
         <input type="text" id="cust-name-input" class="input-box" placeholder="Customer Name" oninput="updateCustInfo()">
-        <input type="number" id="cust-phone-input" class="input-box" placeholder="Phone Number" oninput="updateCustInfo()">
+        <input type="number" id="cust-phone-input" class="input-box" placeholder="WhatsApp Number" oninput="updateCustInfo()">
     </div>
 
     <div class="invoice-container" id="capture-area">
@@ -93,8 +92,8 @@
     </div>
 
     <div class="no-print">
-        <button class="action-btn" style="background:var(--gold)" onclick="printBill()">PRINT PHYSICAL BILL</button>
-        <button class="action-btn" style="background:#25D366; color:white" onclick="shareAsImage()">SEND WHATSAPP IMAGE</button>
+        <button class="action-btn" style="background:var(--gold)" onclick="printBill()">PRINT & SETTLE</button>
+        <button class="action-btn" style="background:#25D366; color:white" onclick="directWhatsApp()">DIRECT WHATSAPP</button>
     </div>
 </div>
 
@@ -111,7 +110,7 @@
     let currentT = 1, totalSales = 0, tables = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
 
     const menu = {
-      "🫓 Breads": [
+       "🫓 Breads": [
             {n:"Plain Roti", p:7}, {n:"Butter Roti", p:10}, {n:"Tandoori Roti", p:10},
             {n:"Plain Naan", p:25}, {n:"Butter Naan", p:30}, {n:"Garlic Naan", p:40}
         ],
@@ -153,8 +152,7 @@
         document.querySelectorAll('.cat-tag').forEach(t => t.classList.remove('active')); el.classList.add('active');
         const grid = document.getElementById('menu-grid'); grid.innerHTML = '';
         menu[cat].forEach(item => {
-            let btns = item.h ? `<div class="portion-group"><button class="btn-add" onclick="addItem('${item.n} (H)', ${item.h})">HALF</button><button class="btn-add" onclick="addItem('${item.n} (F)', ${item.p})">FULL</button></div>` : `<button class="btn-add" onclick="addItem('${item.n}', ${item.p})">ADD ₹${item.p}</button>`;
-            grid.innerHTML += `<div class="menu-item"><b>${item.n}</b>${btns}</div>`;
+            grid.innerHTML += `<div class="menu-item"><b>${item.n}</b><button class="btn-add" onclick="addItem('${item.n}', ${item.p})">ADD ₹${item.p}</button></div>`;
         });
     }
 
@@ -182,23 +180,31 @@
 
     function setT(i) { currentT = i; renderTables(); }
 
-    async function shareAsImage() {
+    async function directWhatsApp() {
+        const phone = document.getElementById('cust-phone-input').value;
+        const name = document.getElementById('cust-name-input').value || 'Guest';
+        if(!phone) return alert("Please enter Phone Number");
+
+        // 1. Capture and Download Image (for history)
         const area = document.getElementById('capture-area');
         const canvas = await html2canvas(area, { scale: 2 });
-        canvas.toBlob(async (blob) => {
-            const file = new File([blob], "HotelMuskan_Bill.png", { type: "image/png" });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Hotel Muskan Bill',
-                        text: 'Customer: ' + (document.getElementById('cust-name-input').value || 'Guest')
-                    });
-                } catch (err) { console.error("Share failed", err); }
-            } else {
-                alert("Please take a screenshot to share.");
-            }
+        const imgData = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.download = `Muskan_Bill_${name}.png`;
+        link.href = imgData;
+        link.click();
+
+        // 2. Open WhatsApp for the Specific Phone Number
+        let text = `*HOTEL MUSKAN - Bill*%0ACustomer: ${name}%0A------------------%0A`;
+        let total = 0;
+        tables[currentT].forEach(i => {
+            text += `${i.n} - ₹${i.p}%0A`;
+            total += i.p;
         });
+        text += `------------------%0A*Total: ₹${total}*%0A_Visit Again!_`;
+        
+        // This opens the EXACT contact directly
+        window.location.href = `whatsapp://send?phone=91${phone}&text=${text}`;
     }
 
     function printBill() {
