@@ -35,7 +35,7 @@
 
         /* Luxury Invoice Design */
         .invoice-container { padding: 10px; background: #000; }
-        .invoice { background: white; color: black; padding: 25px; border-radius: 0px; position: relative; border: 2px solid var(--gold); }
+        .invoice { background: white; color: black; padding: 25px; border-radius: 0px; border: 2px solid var(--gold); }
         .invoice-h { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
         .bill-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ccc; font-size: 14px; }
         .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 22px; margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
@@ -66,11 +66,6 @@
 </div>
 
 <div id="bill" class="page">
-    <div class="no-print">
-        <input type="text" id="cust-name" class="input-box" placeholder="Customer Name">
-        <input type="number" id="cust-phone" class="input-box" placeholder="WhatsApp Number">
-    </div>
-
     <div class="invoice-container" id="capture-area">
         <div class="invoice">
             <div class="invoice-h">
@@ -87,12 +82,11 @@
 
     <div class="no-print">
         <button class="action-btn" style="background:var(--gold)" onclick="printBill()">PRINT PHYSICAL BILL</button>
-        <button class="action-btn" style="background:#25D366; color:white" onclick="shareAsImage()">SHARE IMAGE BILL</button>
+        <button class="action-btn" style="background:#25D366; color:white" onclick="shareAsImage()">SEND WHATSAPP IMAGE</button>
     </div>
 </div>
 
 <div id="admin" class="page no-print">
-    <h3>Switch Table</h3>
     <div id="tables-map" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;"></div>
     <div style="margin-top:20px; padding:20px; background:var(--card); border:1px solid var(--gold); border-radius:10px;">
         <p>Total Shift Revenue</p>
@@ -102,8 +96,7 @@
 
 <script>
     const upiID = "ajaykumar2569563@ybl";
-    let currentT = 1, totalSales = 0;
-    let tables = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
+    let currentT = 1, totalSales = 0, tables = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
 
     const menu = {
         "🫓 Breads": [
@@ -139,78 +132,56 @@
 
     function init() {
         const catBox = document.getElementById('cat-list');
-        for(let cat in menu) {
-            catBox.innerHTML += `<div class="cat-tag" onclick="filterMenu('${cat}', this)">${cat}</div>`;
-        }
+        for(let cat in menu) { catBox.innerHTML += `<div class="cat-tag" onclick="filterMenu('${cat}', this)">${cat}</div>`; }
         filterMenu("🫓 Breads", document.querySelector('.cat-tag'));
         renderTables();
     }
 
     function filterMenu(cat, el) {
-        document.querySelectorAll('.cat-tag').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        const grid = document.getElementById('menu-grid');
-        grid.innerHTML = '';
+        document.querySelectorAll('.cat-tag').forEach(t => t.classList.remove('active')); el.classList.add('active');
+        const grid = document.getElementById('menu-grid'); grid.innerHTML = '';
         menu[cat].forEach(item => {
-            let btns = item.h 
-                ? `<div class="portion-group"><button class="btn-add" onclick="addItem('${item.n} (H)', ${item.h})">HALF</button><button class="btn-add" onclick="addItem('${item.n} (F)', ${item.p})">FULL</button></div>`
-                : `<button class="btn-add" onclick="addItem('${item.n}', ${item.p})">ADD ₹${item.p}</button>`;
+            let btns = item.h ? `<div class="portion-group"><button class="btn-add" onclick="addItem('${item.n} (H)', ${item.h})">HALF</button><button class="btn-add" onclick="addItem('${item.n} (F)', ${item.p})">FULL</button></div>` : `<button class="btn-add" onclick="addItem('${item.n}', ${item.p})">ADD ₹${item.p}</button>`;
             grid.innerHTML += `<div class="menu-item"><b>${item.n}</b>${btns}</div>`;
         });
     }
 
-    function addItem(n, p) {
-        tables[currentT].push({n, p});
-        alert(n + " added");
-    }
+    function addItem(n, p) { tables[currentT].push({n, p}); }
 
     function renderBill() {
-        const box = document.getElementById('bill-items');
-        box.innerHTML = '';
-        let total = 0, summary = {};
-        tables[currentT].forEach(item => {
-            summary[item.n] = (summary[item.n] || {qty:0, p:item.p});
-            summary[item.n].qty++;
-        });
-        for(let n in summary) {
-            let line = summary[n].qty * summary[n].p;
-            total += line;
-            box.innerHTML += `<div class="bill-row"><span>${summary[n].qty} x ${n}</span><span>₹${line}</span></div>`;
-        }
+        const box = document.getElementById('bill-items'); box.innerHTML = ''; let total = 0, summary = {};
+        tables[currentT].forEach(item => { summary[item.n] = (summary[item.n] || {qty:0, p:item.p}); summary[item.n].qty++; });
+        for(let n in summary) { let line = summary[n].qty * summary[n].p; total += line; box.innerHTML += `<div class="bill-row"><span>${summary[n].qty} x ${n}</span><span>₹${line}</span></div>`; }
         document.getElementById('grand-total').innerText = '₹' + total;
         document.getElementById('date-time').innerText = new Date().toLocaleString();
-        const qr = document.getElementById("qrcode");
-        qr.innerHTML = "";
+        const qr = document.getElementById("qrcode"); qr.innerHTML = "";
         if(total > 0) new QRCode(qr, {text: `upi://pay?pa=${upiID}&am=${total}&cu=INR`, width: 120, height: 120});
     }
 
     function renderTables() {
-        const map = document.getElementById('tables-map');
-        map.innerHTML = '';
-        for(let i=1; i<=6; i++) {
-            map.innerHTML += `<button onclick="setT(${i})" style="padding:15px; background:${i==currentT? 'var(--gold)':'#222'}; color:${i==currentT? 'black':'white'}; border:none; border-radius:10px;">T-${i}</button>`;
-        }
+        const map = document.getElementById('tables-map'); map.innerHTML = '';
+        for(let i=1; i<=6; i++) { map.innerHTML += `<button onclick="setT(${i})" style="padding:15px; background:${i==currentT? 'var(--gold)':'#222'}; color:${i==currentT? 'black':'white'}; border:none; border-radius:10px;">T-${i}</button>`; }
     }
 
     function setT(i) { currentT = i; renderTables(); }
 
     async function shareAsImage() {
-        const phone = document.getElementById('cust-phone').value;
-        if(!phone) return alert("Please enter WhatsApp Number");
-
         const area = document.getElementById('capture-area');
-        const canvas = await html2canvas(area);
-        const imgData = canvas.toDataURL("image/png");
-        
-        // On mobile, we trigger a download or share
-        const link = document.createElement('a');
-        link.download = `HotelMuskan_Bill_${currentT}.png`;
-        link.href = imgData;
-        link.click();
-
-        // Redirect to WhatsApp
-        alert("Bill image downloaded! Now sharing to WhatsApp...");
-        window.open(`https://wa.me/91${phone}?text=Dear Customer, here is your bill from Hotel Muskan. Please scan the QR inside the image to pay.`);
+        const canvas = await html2canvas(area, { scale: 2 });
+        canvas.toBlob(async (blob) => {
+            const file = new File([blob], "HotelMuskan_Bill.png", { type: "image/png" });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Hotel Muskan Bill',
+                        text: 'A taste you\'ll remember!'
+                    });
+                } catch (err) { console.error("Share failed", err); }
+            } else {
+                alert("Please take a screenshot to share.");
+            }
+        });
     }
 
     function printBill() {
