@@ -2,119 +2,198 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Muskan - Premium POS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hotel Muskan Mobile</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --primary-gold: #d4af37;
-            --gold-gradient: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            --bg-dark: #050505;
-            --card-bg: #111111;
-            --border-gold: rgba(212, 175, 55, 0.25);
+            --gold: #d4af37;
+            --bg: #050505;
+            --card: #121212;
+            --text: #e0e0e0;
         }
 
-        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: #e0e0e0; margin: 0; padding: 10px; }
-        
-        .brand-header { text-align: center; padding: 15px; border-bottom: 1px solid var(--border-gold); background: var(--card-bg); margin-bottom: 15px; }
-        .brand-header h1 { font-family: 'Playfair Display'; font-size: 32px; color: var(--primary-gold); margin: 0; letter-spacing: 3px; }
-        .slogan { font-family: 'Playfair Display'; font-style: italic; font-size: 14px; color: var(--primary-gold); opacity: 0.9; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding-bottom: 80px; /* Space for bottom nav */
+            overflow-x: hidden;
+        }
 
-        .dashboard { display: grid; grid-template-columns: 1fr 380px 300px; gap: 15px; max-width: 1600px; margin: auto; }
-        @media (max-width: 1200px) { .dashboard { grid-template-columns: 1fr 1fr; } }
+        /* Mobile Header */
+        .header {
+            background: var(--card);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(212,175,55,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 { font-family: 'Playfair Display'; font-size: 22px; color: var(--gold); margin: 0; }
+        .header p { font-size: 10px; margin: 5px 0 0; color: #888; letter-spacing: 1px; }
 
-        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-gold); height: fit-content; margin-bottom: 15px; }
-        h2 { font-family: 'Playfair Display'; color: var(--primary-gold); font-size: 16px; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 15px; }
+        /* Navigation Tabs */
+        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .category-label { color: var(--primary-gold); font-size: 12px; font-weight: bold; margin: 15px 0 8px; text-transform: uppercase; border-left: 3px solid var(--primary-gold); padding-left: 8px; grid-column: 1 / -1; }
-        
-        /* Updated Menu Grid for Half/Full */
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; max-height: 65vh; overflow-y: auto; }
-        .menu-item { background: #1a1a1a; border: 1px solid #333; padding: 10px; border-radius: 10px; text-align: center; transition: 0.2s; }
-        .menu-item .name { display: block; font-size: 11px; font-weight: 600; min-height: 28px; margin-bottom: 5px; }
-        
-        .portion-btns { display: flex; gap: 5px; justify-content: center; }
-        .p-btn { flex: 1; padding: 6px 2px; font-size: 10px; border: 1px solid var(--primary-gold); background: transparent; color: var(--primary-gold); border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .p-btn:hover { background: var(--primary-gold); color: black; }
+        /* Bottom Nav Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #111;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #333;
+            z-index: 1000;
+        }
+        .nav-item { text-align: center; color: #888; font-size: 11px; cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--gold); }
+        .nav-item i { display: block; font-size: 20px; margin-bottom: 3px; }
 
-        .table-map { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
-        .t-box { padding: 10px 5px; border: 1px solid #333; border-radius: 8px; text-align: center; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .t-box.active { border-color: var(--primary-gold); background: rgba(212, 175, 55, 0.1); color: var(--primary-gold); }
+        /* Menu Grid - Highly Mobile Optimized */
+        .menu-scroll { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
+        }
+        .menu-card {
+            background: var(--card);
+            border: 1px solid #222;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .menu-card .name { font-size: 13px; font-weight: 600; display: block; margin-bottom: 8px; height: 32px; overflow: hidden; }
+        .menu-card .price { color: var(--gold); font-weight: bold; font-size: 15px; display: block; margin-bottom: 10px; }
 
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { text-align: left; color: var(--primary-gold); padding: 8px; border-bottom: 1px solid #333; }
-        td { padding: 8px; border-bottom: 1px solid #222; }
+        /* Portion Buttons */
+        .p-btns { display: flex; gap: 5px; }
+        .p-btns button { 
+            flex: 1; 
+            background: transparent; 
+            border: 1px solid var(--gold); 
+            color: var(--gold); 
+            padding: 8px 0; 
+            border-radius: 8px; 
+            font-size: 10px; 
+            font-weight: bold;
+        }
 
-        .btn { padding: 12px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; text-transform: uppercase; }
-        .btn-gold { background: var(--gold-gradient); color: black; }
-        .btn-outline { background: transparent; border: 1px solid var(--primary-gold); color: var(--primary-gold); }
+        /* Invoice Style */
+        .bill-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .bill-table th { text-align: left; font-size: 12px; color: var(--gold); padding: 10px; border-bottom: 1px solid #333; }
+        .bill-table td { padding: 12px 10px; border-bottom: 1px solid #222; font-size: 14px; }
 
-        .grand-total { font-size: 26px; color: var(--primary-gold); font-family: 'Playfair Display'; display: flex; justify-content: space-between; border-top: 2px solid var(--border-gold); padding-top: 10px; margin-top: 10px; }
+        .total-box { 
+            background: var(--gold); 
+            color: black; 
+            padding: 20px; 
+            border-radius: 15px; 
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .total-box b { font-size: 24px; font-family: 'Playfair Display'; }
 
-        #qrcode { background: white; padding: 10px; border-radius: 10px; margin: 15px auto; width: fit-content; border: 2px solid var(--primary-gold); }
+        /* Inputs */
+        .mobile-input {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        /* Actions */
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .btn-print { background: linear-gradient(45deg, #bf953f, #fcf6ba); color: black; }
+        .btn-wa { background: #25D366; color: white; }
+
+        #qrcode { background: white; padding: 10px; border-radius: 10px; margin: 20px auto; width: fit-content; }
 
         @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; color: black !important; padding: 0; }
-            .card { border: none; background: white; width: 100%; }
-            #qrcode { display: block !important; border: 1px solid #000; }
-            .brand-header h1, .slogan, .grand-total { color: black !important; }
+            .bottom-nav, .header, .p-btns, .action-btn, .mobile-input, .nav-item { display: none !important; }
+            body { background: white; color: black; padding: 0; }
+            .tab-content { display: block !important; }
+            #qrcode { display: block !important; }
         }
     </style>
 </head>
 <body>
 
-<div class="brand-header">
+<div class="header">
     <h1>HOTEL MUSKAN</h1>
-    <div class="slogan">"A taste you'll remember"</div>
+    <p>A taste you'll remember | Bhagwanpur</p>
 </div>
 
-<div class="dashboard">
-    <div class="card no-print">
-        <h2>Menu Card (H / F)</h2>
-        <div id="menuContainer" class="menu-grid"></div>
+<div id="menu-tab" class="tab-content active">
+    <div class="menu-scroll" id="menuItems"></div>
+</div>
+
+<div id="bill-tab" class="tab-content">
+    <input type="text" id="cName" class="mobile-input" placeholder="Customer Name">
+    <input type="number" id="cPhone" class="mobile-input" placeholder="WhatsApp Number">
+    
+    <table class="bill-table">
+        <thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
+        <tbody id="billBody"></tbody>
+    </table>
+
+    <div class="total-box">
+        <span>Grand Total</span>
+        <b id="grandTotal">₹0</b>
     </div>
 
-    <div class="card">
-        <div class="no-print">
-            <h2>Tables</h2>
-            <div class="table-map" id="tableMap"></div>
-        </div>
-        
-        <h2>Invoice - Table <span id="activeT">1</span></h2>
-        <table>
-            <thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
-            <tbody id="billBody"></tbody>
-        </table>
+    <div id="qrcode"></div>
 
-        <div class="grand-total">
-            <span>Total</span><span id="grandTotal">₹0</span>
-        </div>
-        <div id="qrcode"></div>
-    </div>
+    <button class="action-btn btn-print" onclick="completeSale()">Print Bill</button>
+    <button class="action-btn btn-wa" onclick="sendWhatsApp()">WhatsApp Bill</button>
+</div>
 
-    <div class="no-print">
-        <div class="card">
-            <h2>Actions</h2>
-            <button class="btn btn-gold" onclick="completeSale()">Print & Settle</button>
-            <button class="btn btn-outline" onclick="printKOT()">Print KOT</button>
-        </div>
-        <div class="card">
-            <h2>Shift Sale</h2>
-            <b id="statSales" style="color:var(--primary-gold); font-size: 20px;">₹0</b>
-        </div>
+<div id="admin-tab" class="tab-content">
+    <h3>Table Management</h3>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;" id="tableGrid"></div>
+    <hr style="border: 0.5px solid #333; margin: 20px 0;">
+    <h3>Shift Summary</h3>
+    <div class="total-box" style="background: #222; color: var(--gold); border: 1px solid var(--gold);">
+        <span>Total Sales Today</span>
+        <b id="shiftTotal">₹0</b>
     </div>
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('menu', this)"><span>🍽️</span>Menu</div>
+    <div class="nav-item" onclick="switchTab('bill', this)"><span>📄</span>Bill</div>
+    <div class="nav-item" onclick="switchTab('admin', this)"><span>⚙️</span>Admin</div>
 </div>
 
 <script>
-    const upiID = "ajaykumar2569563@ybl"; 
+    const upiID = "ajaykumar2569563@ybl";
     let salesTotal = 0;
     let currentTable = 1;
+    let tables = {1:{items:[]}, 2:{items:[]}, 3:{items:[]}, 4:{items:[]}, 5:{items:[]}, 6:{items:[]}};
 
-    // MENU DATA with Half/Full Prices
-    const categorizedMenu = {
-        "🫓 Breads": [
+    const menu = [
+"🫓 Breads": [
             { name: "Plain Roti", price: 7}, { name: "Butter Roti", price: 10},
             { name: "Tandoori Roti", price: 10 }, { name: "Plain Naan", price: 25 },
             { name: "Butter Naan", price: 30 }, { name: "Garlic Naan", price: 40 }
@@ -137,89 +216,74 @@
         ],
         "🥤 Beverages": [
             { name: "Mineral Water", price: 20 }, { name: "Tea", price: 10 }, { name: "Cold Drink", price: 40 }
-        ]
-    };
-
-    let tables = { 1:{items:[]}, 2:{items:[]}, 3:{items:[]}, 4:{items:[]}, 5:{items:[]} };
+    ];
 
     function init() {
-        const container = document.getElementById('menuContainer');
-        for (let cat in categorizedMenu) {
-            container.innerHTML += `<div class="category-label">${cat}</div>`;
-            categorizedMenu[cat].forEach(item => {
-                let btns = item.half 
-                    ? `<div class="portion-btns">
-                        <button class="p-btn" onclick="addToBill('${item.name} (H)', ${item.half})">HALF</button>
-                        <button class="p-btn" onclick="addToBill('${item.name} (F)', ${item.price})">FULL</button>
-                       </div>`
-                    : `<div class="portion-btns">
-                        <button class="p-btn" style="width:100%" onclick="addToBill('${item.name}', ${item.price})">ADD</button>
-                       </div>`;
-                
-                container.innerHTML += `
-                    <div class="menu-item">
-                        <span class="name">${item.name}</span>
-                        ${btns}
-                    </div>`;
-            });
-        }
-        renderTableMap();
-        updateUI();
+        const container = document.getElementById('menuItems');
+        menu.forEach(item => {
+            let btns = item.half 
+                ? `<div class="p-btns"><button onclick="add('${item.name} (H)', ${item.half})">HALF</button><button onclick="add('${item.name} (F)', ${item.price})">FULL</button></div>`
+                : `<div class="p-btns"><button style="width:100%" onclick="add('${item.name}', ${item.price})">ADD</button></div>`;
+            container.innerHTML += `<div class="menu-card"><span class="name">${item.name}</span><span class="price">₹${item.price}</span>${btns}</div>`;
+        });
+        updateTables();
     }
 
-    function renderTableMap() {
-        const map = document.getElementById('tableMap');
-        map.innerHTML = '';
-        for (let i in tables) {
-            map.innerHTML += `<div class="t-box ${i == currentTable ? 'active' : ''}" onclick="loadTable(${i})">T-${i}</div>`;
-        }
+    function switchTab(tab, el) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(tab + '-tab').classList.add('active');
+        el.classList.add('active');
     }
 
-    function loadTable(n) { currentTable = n; document.getElementById('activeT').innerText = n; renderTableMap(); updateUI(); }
-
-    function addToBill(name, price) {
-        let existing = tables[currentTable].items.find(i => i.name === name);
-        if (existing) { existing.qty++; } 
-        else { tables[currentTable].items.push({ name, price, qty: 1 }); }
-        updateUI();
+    function add(name, price) {
+        let items = tables[currentTable].items;
+        let exist = items.find(i => i.name === name);
+        if(exist) exist.qty++; else items.push({name, price, qty: 1});
+        updateBill();
     }
 
-    function updateUI() {
+    function updateBill() {
         const body = document.getElementById('billBody');
         body.innerHTML = '';
         let total = 0;
-        tables[currentTable].items.forEach(item => {
-            let lineTotal = item.price * item.qty;
-            total += lineTotal;
-            body.innerHTML += `<tr><td>${item.name}</td><td>${item.qty}</td><td>₹${lineTotal}</td></tr>`;
+        tables[currentTable].items.forEach(i => {
+            total += i.price * i.qty;
+            body.innerHTML += `<tr><td>${i.name}</td><td>${i.qty}</td><td>₹${i.price * i.qty}</td></tr>`;
         });
         document.getElementById('grandTotal').innerText = '₹' + total;
-        generateQR(total);
-    }
-
-    function generateQR(amt) {
+        document.getElementById('grandTotal').innerText = '₹' + total;
+        
         const qrDiv = document.getElementById("qrcode");
         qrDiv.innerHTML = "";
-        if (amt > 0) new QRCode(qrDiv, { text: `upi://pay?pa=${upiID}&am=${amt}&cu=INR`, width: 140, height: 140 });
+        if(total > 0) new QRCode(qrDiv, {text: `upi://pay?pa=${upiID}&am=${total}&cu=INR`, width: 130, height: 130});
+    }
+
+    function updateTables() {
+        const grid = document.getElementById('tableGrid');
+        grid.innerHTML = '';
+        for(let i in tables) {
+            grid.innerHTML += `<div onclick="selT(${i})" style="padding:15px; background:${i==currentTable?'var(--gold)':'#1a1a1a'}; color:${i==currentTable?'black':'white'}; border-radius:10px; text-align:center; font-weight:bold;">T-${i}</div>`;
+        }
+    }
+
+    function selT(i) { currentTable = i; updateTables(); updateBill(); switchTab('menu', document.querySelectorAll('.nav-item')[0]); }
+
+    function sendWhatsApp() {
+        const phone = document.getElementById('cPhone').value;
+        if(!phone) return alert("Enter Number");
+        let text = `*HOTEL MUSKAN*%0A------------------%0A`;
+        tables[currentTable].items.forEach(i => text += `${i.name} x ${i.qty} = ₹${i.price*i.qty}%0A`);
+        text += `------------------%0A*Total: ${document.getElementById('grandTotal').innerText}*%0A_Visit Again!_`;
+        window.open(`https://wa.me/91${phone}?text=${text}`);
     }
 
     function completeSale() {
-        const total = parseInt(document.getElementById('grandTotal').innerText.replace('₹', ''));
-        if (total <= 0) return;
-        salesTotal += total;
-        document.getElementById('statSales').innerText = '₹' + salesTotal;
+        salesTotal += parseInt(document.getElementById('grandTotal').innerText.replace('₹',''));
+        document.getElementById('shiftTotal').innerText = '₹' + salesTotal;
         window.print();
-        tables[currentTable] = { items: [] };
-        updateUI();
-        renderTableMap();
-    }
-
-    function printKOT() {
-        const kot = window.open('', '', 'width=300,height=400');
-        kot.document.write(`<html><body style="font-family:monospace; padding:20px;"><h3>KOT - HOTEL MUSKAN</h3><p>Table: ${currentTable}</p><hr>`);
-        tables[currentTable].items.forEach(i => kot.document.write(`${i.qty} x ${i.name}<br>`));
-        kot.document.write(`</body></html>`);
-        kot.print(); kot.close();
+        tables[currentTable].items = [];
+        updateBill();
     }
 
     init();
