@@ -110,20 +110,36 @@
 </div>
 
 <script>
-    const upiID = "ajaykumar256956@@ybl";
+    const upiID = "ajaykumar2569563@ybl";
     let currentTable = 1;
     let shiftRevenue = 0;
     let tables = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
 
     const menuData = [
-        { name: "Tandoori Roti", price: 10, half: null },
-        { name: "Butter Naan", price: 30, half: null },
-        { name: "Chicken Biryani", price: 160, half: 90 },
-        { name: "Mutton Biryani", price: 220, half: 120 },
-        { name: "Paneer Butter Masala", price: 140, half: 80 },
-        { name: "Dal Tadka", price: 100, half: 60 },
-        { name: "Chicken Curry", price: 140, half: 80 },
-        { name: "Cold Drink", price: 40, half: null }
+      "🫓 Breads": [
+            { name: "Plain Roti", price: 7 }, { name: "Butter Roti", price: 10 },
+            { name: "Tandoori Roti", price: 10 }, { name: "Plain Naan", price: 25 },
+            { name: "Butter Naan", price: 30 }, { name: "Garlic Naan", price: 40 }
+        ],
+        "🍚 Rice & Biryani": [
+            { name: "Plain Rice", price: 70, half: 40 }, { name: "Jeera Rice", price: 70, half: 40 },
+            { name: "Veg Biryani", price: 120, half: 70 }, { name: "Chicken Biryani", price: 160, half: 90 },
+            { name: "Mutton Biryani", price: 220, half: 120 }
+        ],
+        "🥦 Veg Main": [
+            { name: "Dal Fry", price: 140, half: 70 }, { name: "Dal Tadka", price: 140, half: 70 },
+            { name: "Paneer Butter Masala", price: 140, half: 80 }, { name: "Mix Veg", price: 100, half: 60 }
+        ],
+        "🍗 Non-Veg Main": [
+            { name: "Chicken Curry", price: 140, half: 80 }, { name: "Chicken Butter Masala", price: 160, half: 90 },
+            { name: "Mutton Curry", price: 220, half: 120 }
+        ],
+        "🍟 Starters": [
+            { name: "Veg Manchurian", price: 120, half: 70 }, { name: "Chicken Chilli", price: 150, half: 90 }
+        ],
+        "🥤 Beverages": [
+            { name: "Mineral Water", price: 20 }, { name: "Tea", price: 15 }, { name: "Cold Drink", price: 40 }
+        ]
     ];
 
     function showPage(pageId, btn) {
