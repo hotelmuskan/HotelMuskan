@@ -2,122 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Muskan - Signature POS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hotel Muskan POS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root {
-            --primary-gold: #d4af37;
-            --gold-gradient: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            --bg-dark: #050505;
-            --card-bg: #111111;
-            --border-gold: rgba(212, 175, 55, 0.25);
-        }
-
-        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: #e0e0e0; margin: 0; padding: 10px; }
+        :root { --gold: #d4af37; --dark: #0a0a0a; --card: #161616; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--dark); color: white; margin: 0; padding-bottom: 70px; }
         
-        .brand-header { text-align: center; padding: 15px; border-bottom: 1px solid var(--border-gold); background: var(--card-bg); margin-bottom: 15px; }
-        .brand-header h1 { font-family: 'Playfair Display'; font-size: 32px; color: var(--primary-gold); margin: 0; letter-spacing: 3px; }
-        .slogan { font-family: 'Playfair Display'; font-style: italic; font-size: 14px; color: var(--primary-gold); opacity: 0.9; }
-        .location { font-size: 10px; color: #888; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+        /* Header */
+        .header { text-align: center; padding: 20px; border-bottom: 2px solid var(--gold); background: #000; }
+        .header h1 { margin: 0; color: var(--gold); letter-spacing: 2px; font-size: 24px; }
+        .header p { margin: 5px 0 0; font-size: 10px; color: #888; }
 
-        .dashboard { display: grid; grid-template-columns: 1fr 380px 320px; gap: 15px; max-width: 1600px; margin: auto; }
-        @media (max-width: 1200px) { .dashboard { grid-template-columns: 1fr; } }
+        /* Tabs */
+        .tab-btn-container { display: flex; background: #111; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #333; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; }
+        .tab-btn.active { color: var(--gold); border-bottom: 3px solid var(--gold); }
 
-        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-gold); height: fit-content; margin-bottom: 15px; }
-        h2 { font-family: 'Playfair Display'; color: var(--primary-gold); font-size: 16px; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 15px; }
+        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* CRM Inputs */
-        .crm-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        input { background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; font-size: 13px; }
-        input:focus { border-color: var(--primary-gold); outline: none; }
+        /* Menu Grid */
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .menu-item { background: var(--card); border: 1px solid #333; padding: 12px; border-radius: 12px; text-align: center; }
+        .menu-item b { display: block; font-size: 13px; margin-bottom: 5px; min-height: 32px; }
+        .btn-group { display: flex; gap: 5px; }
+        .btn-sm { flex: 1; padding: 8px 0; font-size: 10px; border: 1px solid var(--gold); background: none; color: var(--gold); border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-sm:active { background: var(--gold); color: black; }
 
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; max-height: 50vh; overflow-y: auto; }
-        .menu-item { background: #1a1a1a; border: 1px solid #333; padding: 10px; border-radius: 10px; text-align: center; }
-        .menu-item .name { display: block; font-size: 11px; font-weight: 600; min-height: 28px; margin-bottom: 5px; }
+        /* Invoice */
+        .invoice-box { background: white; color: black; padding: 20px; border-radius: 5px; margin-top: 10px; }
+        .bill-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ddd; font-size: 14px; }
+        .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 20px; margin-top: 15px; padding-top: 10px; border-top: 2px solid #000; }
         
-        .portion-btns { display: flex; gap: 5px; }
-        .p-btn { flex: 1; padding: 6px 2px; font-size: 10px; border: 1px solid var(--primary-gold); background: transparent; color: var(--primary-gold); border-radius: 4px; cursor: pointer; }
-        .p-btn:hover { background: var(--primary-gold); color: black; }
+        /* Inputs */
+        .input-field { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
 
-        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 15px; }
-        th { text-align: left; color: var(--primary-gold); padding: 8px; border-bottom: 1px solid #333; }
-        td { padding: 8px; border-bottom: 1px solid #222; }
+        /* Buttons */
+        .action-btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .bg-gold { background: var(--gold); color: black; }
+        .bg-wa { background: #25D366; color: white; }
 
-        .btn { padding: 12px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; text-transform: uppercase; font-size: 12px; }
-        .btn-gold { background: var(--gold-gradient); color: black; }
-        .btn-whatsapp { background: #25D366; color: white; }
-        .btn-outline { background: transparent; border: 1px solid var(--primary-gold); color: var(--primary-gold); }
-
-        .grand-total { font-size: 26px; color: var(--primary-gold); font-family: 'Playfair Display'; display: flex; justify-content: space-between; border-top: 2px solid var(--border-gold); padding-top: 10px; }
-
-        #qrcode { background: white; padding: 10px; border-radius: 10px; margin: 15px auto; width: fit-content; border: 2px solid var(--primary-gold); }
+        #qrcode { margin: 15px auto; width: 150px; height: 150px; background: white; padding: 10px; }
 
         @media print {
             .no-print { display: none !important; }
-            body { background: white !important; color: black !important; }
-            .card { border: 2px solid #000; background: white; width: 100%; padding: 20px; border-radius: 0; }
-            .brand-header h1, .slogan, .grand-total, h2 { color: black !important; }
-            #qrcode { display: block !important; border: 1px solid #000; }
+            body { background: white; color: black; }
+            .invoice-box { border: none; width: 100%; }
         }
     </style>
 </head>
 <body>
 
-<div class="brand-header">
+<div class="header">
     <h1>HOTEL MUSKAN</h1>
-    <div class="slogan">"A taste you'll remember"</div>
-    <div class="location">Near Overbridge, Bhagwanpur</div>
+    <p>A taste you'll remember | Bhagwanpur Overbridge</p>
 </div>
 
-<div class="dashboard">
-    <div class="card no-print">
-        <h2>Luxury Menu Card</h2>
-        <div id="menuContainer" class="menu-grid"></div>
+<div class="tab-btn-container no-print">
+    <button class="tab-btn active" onclick="showPage('menu', this)">MENU</button>
+    <button class="tab-btn" onclick="showPage('bill', this)">BILL</button>
+    <button class="tab-btn" onclick="showPage('admin', this)">ADMIN</button>
+</div>
+
+<div id="menu" class="page active no-print">
+    <div class="menu-grid" id="menu-container"></div>
+</div>
+
+<div id="bill" class="page">
+    <div class="no-print">
+        <input type="text" id="cust-name" class="input-field" placeholder="Customer Name">
+        <input type="number" id="cust-phone" class="input-field" placeholder="WhatsApp Number">
     </div>
 
-    <div class="card" id="printableInvoice">
-        <div class="crm-box no-print">
-            <input type="text" id="custName" placeholder="Customer Name">
-            <input type="number" id="custPhone" placeholder="WhatsApp Number">
+    <div class="invoice-box" id="print-area">
+        <div style="text-align: center;">
+            <h2 style="margin:0;">HOTEL MUSKAN</h2>
+            <small>Bhagwanpur Overbridge, Near Overbridge</small><br>
+            <small id="bill-date"></small>
         </div>
-        
-        <h2>Invoice - Table <span id="activeT">1</span></h2>
-        <div class="print-only" id="printCustomerInfo" style="display:none; margin-bottom: 10px; font-size: 12px;"></div>
-        
-        <table>
-            <thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
-            <tbody id="billBody"></tbody>
-        </table>
-
-        <div class="grand-total"><span>Total</span><span id="grandTotal">₹0</span></div>
+        <hr>
+        <div id="bill-items-list"></div>
+        <div class="total-row">
+            <span>TOTAL</span>
+            <span id="grand-total">₹0</span>
+        </div>
         <div id="qrcode"></div>
-        <p style="text-align:center; font-size:10px; color:black; font-weight:bold; margin-top:10px;">A taste you'll remember - Hotel Muskan</p>
+        <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 10px;">
+            A taste you'll remember - Scan to Pay
+        </div>
     </div>
 
     <div class="no-print">
-        <div class="card">
-            <h2>Actions</h2>
-            <button class="btn btn-gold" onclick="completeSale()">Print & Settle</button>
-            <button class="btn btn-whatsapp" onclick="sendWhatsApp()">Send on WhatsApp</button>
-            <button class="btn btn-outline" onclick="printKOT()">Print KOT</button>
-        </div>
-        <div class="card">
-            <h2>Shift Sale</h2>
-            <b id="statSales" style="color:var(--primary-gold); font-size: 20px;">₹0</b>
-        </div>
+        <button class="action-btn bg-gold" onclick="printBill()">PRINT BILL</button>
+        <button class="action-btn bg-wa" onclick="whatsappBill()">WHATSAPP BILL</button>
+    </div>
+</div>
+
+<div id="admin" class="page no-print">
+    <h3>Table Management</h3>
+    <div id="table-selection" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
+    <div style="margin-top: 30px; background: #111; padding: 20px; border-radius: 10px; border: 1px solid var(--gold);">
+        <p>Today's Total Revenue</p>
+        <h2 id="revenue-total" style="color: var(--gold); margin:0;">₹0</h2>
     </div>
 </div>
 
 <script>
-    const upiID = "ajaykumar2569563@ybl"; 
-    let salesTotal = 0;
+    const upiID = "ajaykumar2569563@ybl";
     let currentTable = 1;
+    let shiftRevenue = 0;
+    let tables = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
 
-    const categorizedMenu = {
-        "🫓 Breads": [
-         "🫓 Breads": [
+    const menuData = [
+"🫓 Breads": [
             { name: "Plain Roti", price: 7}, { name: "Butter Roti", price: 10},
             { name: "Tandoori Roti", price: 10 }, { name: "Plain Naan", price: 25 },
             { name: "Butter Naan", price: 30 }, { name: "Garlic Naan", price: 40 }
@@ -140,92 +139,97 @@
         ],
         "🥤 Beverages": [
             { name: "Mineral Water", price: 20 }, { name: "Tea", price: 10 }, { name: "Cold Drink", price: 40 }
-        ]
-    };
+    ];
 
-    let tables = { 1:{items:[], custName:'', custPhone:''}, 2:{items:[]}, 3:{items:[]}, 4:{items:[]}, 5:{items:[]} };
+    function showPage(pageId, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        btn.classList.add('active');
+        if(pageId === 'bill') renderBill();
+    }
 
     function init() {
-        const container = document.getElementById('menuContainer');
-        for (let cat in categorizedMenu) {
-            container.innerHTML += `<div class="category-label">${cat}</div>`;
-            categorizedMenu[cat].forEach(item => {
-                let btns = item.half 
-                    ? `<div class="portion-btns"><button class="p-btn" onclick="addToBill('${item.name} (H)', ${item.half})">HALF</button><button class="p-btn" onclick="addToBill('${item.name} (F)', ${item.price})">FULL</button></div>`
-                    : `<div class="portion-btns"><button class="p-btn" style="width:100%" onclick="addToBill('${item.name}', ${item.price})">ADD</button></div>`;
-                container.innerHTML += `<div class="menu-item"><span class="name">${item.name}</span>${btns}</div>`;
-            });
-        }
-        updateUI();
+        const container = document.getElementById('menu-container');
+        menuData.forEach((item, index) => {
+            let buttons = `<button class="btn-sm" onclick="add('${item.name}', ${item.price})">FULL (₹${item.price})</button>`;
+            if(item.half) {
+                buttons = `<button class="btn-sm" onclick="add('${item.name} (H)', ${item.half})">HALF (₹${item.half})</button>` + buttons;
+            }
+            container.innerHTML += `<div class="menu-item"><b>${item.name}</b><div class="btn-group">${buttons}</div></div>`;
+        });
+        renderTables();
     }
 
-    function addToBill(name, price) {
-        let existing = tables[currentTable].items.find(i => i.name === name);
-        if (existing) { existing.qty++; } 
-        else { tables[currentTable].items.push({ name, price, qty: 1 }); }
-        updateUI();
+    function add(name, price) {
+        tables[currentTable].push({ name, price });
+        alert(name + " added to Table " + currentTable);
     }
 
-    function updateUI() {
-        const body = document.getElementById('billBody');
-        body.innerHTML = '';
+    function renderBill() {
+        const list = document.getElementById('bill-items-list');
+        const totalEl = document.getElementById('grand-total');
+        const dateEl = document.getElementById('bill-date');
+        list.innerHTML = '';
         let total = 0;
-        tables[currentTable].items.forEach(item => {
-            let lineTotal = item.price * item.qty;
-            total += lineTotal;
-            body.innerHTML += `<tr><td>${item.name}</td><td>${item.qty}</td><td>₹${lineTotal}</td></tr>`;
+
+        // Grouping items to show quantity
+        let counts = {};
+        tables[currentTable].forEach(item => {
+            counts[item.name] = (counts[item.name] || { qty: 0, price: item.price });
+            counts[item.name].qty++;
         });
-        document.getElementById('grandTotal').innerText = '₹' + total;
-        generateQR(total);
+
+        for (let name in counts) {
+            let itemTotal = counts[name].qty * counts[name].price;
+            total += itemTotal;
+            list.innerHTML += `<div class="bill-row"><span>${counts[name].qty} x ${name}</span><span>₹${itemTotal}</span></div>`;
+        }
+
+        totalEl.innerText = '₹' + total;
+        dateEl.innerText = new Date().toLocaleString();
+
+        const qrContainer = document.getElementById("qrcode");
+        qrContainer.innerHTML = "";
+        if(total > 0) {
+            new QRCode(qrContainer, { text: `upi://pay?pa=${upiID}&am=${total}&cu=INR`, width: 128, height: 128 });
+        }
     }
 
-    function generateQR(amt) {
-        const qrDiv = document.getElementById("qrcode");
-        qrDiv.innerHTML = "";
-        if (amt > 0) new QRCode(qrDiv, { text: `upi://pay?pa=${upiID}&am=${amt}&cu=INR`, width: 140, height: 140 });
+    function renderTables() {
+        const container = document.getElementById('table-selection');
+        container.innerHTML = '';
+        for(let i=1; i<=6; i++) {
+            container.innerHTML += `<button class="tab-btn" style="background:#222; margin:5px; border-radius:10px; color:${i==currentTable?'var(--gold)':'white'}" onclick="setTable(${i})">Table ${i}</button>`;
+        }
     }
 
-    function sendWhatsApp() {
-        const phone = document.getElementById('custPhone').value;
-        const name = document.getElementById('custName').value || 'Customer';
-        if (!phone) return alert("Enter WhatsApp Number");
+    function setTable(n) {
+        currentTable = n;
+        renderTables();
+        alert("Switched to Table " + n);
+    }
 
-        let billText = `*HOTEL MUSKAN - Invoice*%0A_A taste you'll remember_%0A--------------------------%0A*Customer:* ${name}%0A`;
-        tables[currentTable].items.forEach(i => {
-            billText += `${i.name} x ${i.qty} = ₹${i.price * i.qty}%0A`;
+    function whatsappBill() {
+        const phone = document.getElementById('cust-phone').value;
+        if(!phone) return alert("Please enter phone number");
+        let text = `*HOTEL MUSKAN*%0A------------------%0A`;
+        let total = 0;
+        tables[currentTable].forEach(i => {
+            text += `${i.name} - ₹${i.price}%0A`;
+            total += i.price;
         });
-        billText += `--------------------------%0A*Total: ${document.getElementById('grandTotal').innerText}*%0A--------------------------%0A_Location: Near Overbridge, Bhagwanpur_`;
-
-        window.open(`https://wa.me/91${phone}?text=${billText}`);
+        text += `------------------%0A*Total: ₹${total}*%0A_A taste you'll remember_`;
+        window.open(`https://wa.me/91${phone}?text=${text}`);
     }
 
-    function completeSale() {
-        const total = parseInt(document.getElementById('grandTotal').innerText.replace('₹', ''));
-        if (total <= 0) return;
-        
-        // Show customer info on print
-        const name = document.getElementById('custName').value;
-        const info = document.getElementById('printCustomerInfo');
-        if(name) { info.innerHTML = `Customer: ${name}`; info.style.display = 'block'; }
-        
-        salesTotal += total;
-        document.getElementById('statSales').innerText = '₹' + salesTotal;
+    function printBill() {
+        const total = parseInt(document.getElementById('grand-total').innerText.replace('₹',''));
+        shiftRevenue += total;
+        document.getElementById('revenue-total').innerText = '₹' + shiftRevenue;
         window.print();
-        
-        // Reset
-        tables[currentTable] = { items: [] };
-        document.getElementById('custName').value = '';
-        document.getElementById('custPhone').value = '';
-        info.style.display = 'none';
-        updateUI();
-    }
-
-    function printKOT() {
-        const kot = window.open('', '', 'width=300,height=400');
-        kot.document.write(`<html><body style="font-family:monospace; padding:20px;"><h3>KOT - HOTEL MUSKAN</h3><p>Table: ${currentTable}</p><hr>`);
-        tables[currentTable].items.forEach(i => kot.document.write(`${i.qty} x ${i.name}<br>`));
-        kot.document.write(`</body></html>`);
-        kot.print(); kot.close();
+        tables[currentTable] = [];
+        renderBill();
     }
 
     init();
