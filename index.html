@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hotel Muskan POS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { --gold: #d4af37; --dark: #050505; --card: #121212; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding-bottom: 70px; }
@@ -20,7 +21,6 @@
         .page { display: none; padding: 10px; }
         .page.active { display: block; }
 
-        /* Menu System */
         .category-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; scrollbar-width: none; }
         .category-scroll::-webkit-scrollbar { display: none; }
         .cat-tag { background: #222; padding: 8px 15px; border-radius: 20px; font-size: 12px; white-space: nowrap; border: 1px solid #444; }
@@ -28,25 +28,28 @@
 
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
         .menu-item { background: var(--card); border: 1px solid #222; padding: 10px; border-radius: 12px; text-align: center; }
-        .menu-item b { display: block; font-size: 12px; min-height: 30px; margin-bottom: 5px; }
-        .btn-add { width: 100%; padding: 8px; background: none; border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; font-weight: bold; font-size: 11px; }
-
-        /* Invoice */
-        .invoice { background: white; color: black; padding: 20px; border-radius: 4px; margin-top: 10px; }
-        .invoice-h { text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-        .bill-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed #eee; font-size: 13px; }
-        .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 20px; margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
+        .menu-item b { display: block; font-size: 12px; min-height: 30px; margin-bottom: 8px; }
         
-        #qrcode { margin: 15px auto; width: 128px; }
-        .input-box { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
-        .action-btn { width: 100%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; margin-top: 10px; font-size: 14px; }
+        .portion-group { display: flex; gap: 5px; }
+        .btn-add { flex: 1; padding: 8px 0; background: none; border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; font-weight: bold; font-size: 10px; cursor: pointer; }
 
-        @media print { .no-print { display: none !important; } body { background: white; color: black; } .invoice { width: 100%; margin: 0; } }
+        /* Luxury Invoice Design */
+        .invoice-container { padding: 10px; background: #000; }
+        .invoice { background: white; color: black; padding: 25px; border-radius: 0px; position: relative; border: 2px solid var(--gold); }
+        .invoice-h { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+        .bill-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ccc; font-size: 14px; }
+        .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 22px; margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
+        
+        #qrcode { margin: 15px auto; width: 128px; display: flex; justify-content: center; }
+        .input-box { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
+        .action-btn { width: 100%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; margin-top: 10px; font-size: 14px; cursor: pointer; }
+
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
-<div class="header">
+<div class="header no-print">
     <h1>HOTEL MUSKAN</h1>
     <p>"A taste you'll remember"</p>
 </div>
@@ -68,21 +71,23 @@
         <input type="number" id="cust-phone" class="input-box" placeholder="WhatsApp Number">
     </div>
 
-    <div class="invoice">
-        <div class="invoice-h">
-            <h2 style="margin:0;">HOTEL MUSKAN</h2>
-            <small>Bhagwanpur Overbridge</small><br>
-            <small id="date-time"></small>
+    <div class="invoice-container" id="capture-area">
+        <div class="invoice">
+            <div class="invoice-h">
+                <h2 style="margin:0; font-family: serif; letter-spacing: 2px;">HOTEL MUSKAN</h2>
+                <small style="font-weight: bold;">Near Overbridge, Bhagwanpur</small><br>
+                <small id="date-time" style="color: #555;"></small>
+            </div>
+            <div id="bill-items"></div>
+            <div class="total-row"><span>NET TOTAL</span><span id="grand-total">₹0</span></div>
+            <div id="qrcode"></div>
+            <div style="text-align:center; font-size:11px; font-weight:bold; letter-spacing: 1px; border-top: 1px solid #000; padding-top: 10px;">A TASTE YOU'LL REMEMBER</div>
         </div>
-        <div id="bill-items"></div>
-        <div class="total-row"><span>TOTAL</span><span id="grand-total">₹0</span></div>
-        <div id="qrcode"></div>
-        <div style="text-align:center; font-size:10px; font-weight:bold;">A taste you'll remember</div>
     </div>
 
     <div class="no-print">
-        <button class="action-btn" style="background:var(--gold)" onclick="printBill()">PRINT & SETTLE</button>
-        <button class="action-btn" style="background:#25D366; color:white" onclick="shareWA()">WHATSAPP BILL</button>
+        <button class="action-btn" style="background:var(--gold)" onclick="printBill()">PRINT PHYSICAL BILL</button>
+        <button class="action-btn" style="background:#25D366; color:white" onclick="shareAsImage()">SHARE IMAGE BILL</button>
     </div>
 </div>
 
@@ -97,8 +102,7 @@
 
 <script>
     const upiID = "ajaykumar2569563@ybl";
-    let currentT = 1;
-    let totalSales = 0;
+    let currentT = 1, totalSales = 0;
     let tables = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
 
     const menu = {
@@ -107,22 +111,21 @@
             {n:"Plain Naan", p:25}, {n:"Butter Naan", p:30}, {n:"Garlic Naan", p:40}
         ],
         "🍚 Rice & Biryani": [
-            {n:"Plain Rice", p:50}, {n:"Jeera Rice", p:70}, {n:"Veg Pulao", p:90},
-            {n:"Veg Biryani", p:120}, {n:"Chicken Biryani", p:160}, {n:"Mutton Biryani", p:220}
+            {n:"Plain Rice", p:70, h:40}, {n:"Jeera Rice", p:70, h:40},
+            {n:"Veg Biryani", p:120, h:70}, {n:"Chicken Biryani", p:160, h:90}, {n:"Mutton Biryani", p:220, h:130}
         ],
         "🥦 Veg Main": [
-            {n:"Dal Fry", p:80}, {n:"Dal Tadka", p:100}, {n:"Aloo Gobi", p:90},
-            {n:"Mix Veg", p:100}, {n:"Paneer Butter", p:140}, {n:"Shahi Paneer", p:150}
+            {n:"Dal Tadka", p:140, h:70}, {n:"Paneer Butter", p:240, h:120},
+            {n:"Shahi Paneer", p:240, h:120}, {n:"Mix Veg", p:160, h:80}
         ],
         "🍗 Non-Veg": [
-            {n:"Egg Curry", p:90}, {n:"Chicken Curry", p:140}, {n:"Chicken Butter", p:160},
-            {n:"Fish Curry", p:170}, {n:"Mutton Curry", p:220}
+            {n:"Chicken Curry", p:180, h:90}, {n:"Chicken Butter", p:240, h:120}, {n:"Mutton Curry", p:240, h:120}
         ],
         "🍟 Starters": [
-            {n:"Veg Pakora", p:60}, {n:"Paneer Pakora", p:100}, {n:"Veg Manchurian", p:120}, {n:"Chicken Chilli", p:150}
+            {n:"Veg Manchurian", p:120, h:70}, {n:"Chicken Chilli", p:240, h:120}
         ],
         "🥤 Drinks": [
-            {n:"Mineral Water", p:20}, {n:"Tea", p:15}, {n:"Coffee", p:25}, {n:"Cold Drink", p:40}
+            {n:"Mineral Water", p:20}, {n:"Tea", p:10}, {n:"Cold Drink", p:40}
         ]
     };
 
@@ -149,66 +152,71 @@
         const grid = document.getElementById('menu-grid');
         grid.innerHTML = '';
         menu[cat].forEach(item => {
-            grid.innerHTML += `<div class="menu-item"><b>${item.n}</b><button class="btn-add" onclick="addItem('${item.n}', ${item.p})">ADD ₹${item.p}</button></div>`;
+            let btns = item.h 
+                ? `<div class="portion-group"><button class="btn-add" onclick="addItem('${item.n} (H)', ${item.h})">HALF</button><button class="btn-add" onclick="addItem('${item.n} (F)', ${item.p})">FULL</button></div>`
+                : `<button class="btn-add" onclick="addItem('${item.n}', ${item.p})">ADD ₹${item.p}</button>`;
+            grid.innerHTML += `<div class="menu-item"><b>${item.n}</b>${btns}</div>`;
         });
     }
 
     function addItem(n, p) {
         tables[currentT].push({n, p});
-        new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3').play();
+        alert(n + " added");
     }
 
     function renderBill() {
         const box = document.getElementById('bill-items');
-        const dateBox = document.getElementById('date-time');
         box.innerHTML = '';
-        let total = 0;
-        let summary = {};
-
+        let total = 0, summary = {};
         tables[currentT].forEach(item => {
             summary[item.n] = (summary[item.n] || {qty:0, p:item.p});
             summary[item.n].qty++;
         });
-
         for(let n in summary) {
-            let lineTotal = summary[n].qty * summary[n].p;
-            total += lineTotal;
-            box.innerHTML += `<div class="bill-row"><span>${summary[n].qty} x ${n}</span><span>₹${lineTotal}</span></div>`;
+            let line = summary[n].qty * summary[n].p;
+            total += line;
+            box.innerHTML += `<div class="bill-row"><span>${summary[n].qty} x ${n}</span><span>₹${line}</span></div>`;
         }
-
         document.getElementById('grand-total').innerText = '₹' + total;
-        dateBox.innerText = new Date().toLocaleString();
-        
+        document.getElementById('date-time').innerText = new Date().toLocaleString();
         const qr = document.getElementById("qrcode");
         qr.innerHTML = "";
-        if(total > 0) new QRCode(qr, {text: `upi://pay?pa=${upiID}&am=${total}&cu=INR`, width: 128, height: 128});
+        if(total > 0) new QRCode(qr, {text: `upi://pay?pa=${upiID}&am=${total}&cu=INR`, width: 120, height: 120});
     }
 
     function renderTables() {
         const map = document.getElementById('tables-map');
         map.innerHTML = '';
         for(let i=1; i<=6; i++) {
-            map.innerHTML += `<button onclick="setT(${i})" style="padding:15px; background:${i==currentT? 'var(--gold)':'#222'}; color:${i==currentT? 'black':'white'}; border:none; border-radius:10px;">Table ${i}</button>`;
+            map.innerHTML += `<button onclick="setT(${i})" style="padding:15px; background:${i==currentT? 'var(--gold)':'#222'}; color:${i==currentT? 'black':'white'}; border:none; border-radius:10px;">T-${i}</button>`;
         }
     }
 
-    function setT(i) { currentT = i; renderTables(); alert("Switched to T-"+i); }
+    function setT(i) { currentT = i; renderTables(); }
 
-    function shareWA() {
-        const ph = document.getElementById('cust-phone').value;
-        if(!ph) return alert("Enter Phone");
-        let txt = `*HOTEL MUSKAN*%0A------------------%0A`;
-        tables[currentT].forEach(i => txt += `${i.n} - ₹${i.p}%0A`);
-        txt += `------------------%0A*Total: ${document.getElementById('grand-total').innerText}*%0A_Visit Again!_`;
-        window.open(`https://wa.me/91${ph}?text=${txt}`);
+    async function shareAsImage() {
+        const phone = document.getElementById('cust-phone').value;
+        if(!phone) return alert("Please enter WhatsApp Number");
+
+        const area = document.getElementById('capture-area');
+        const canvas = await html2canvas(area);
+        const imgData = canvas.toDataURL("image/png");
+        
+        // On mobile, we trigger a download or share
+        const link = document.createElement('a');
+        link.download = `HotelMuskan_Bill_${currentT}.png`;
+        link.href = imgData;
+        link.click();
+
+        // Redirect to WhatsApp
+        alert("Bill image downloaded! Now sharing to WhatsApp...");
+        window.open(`https://wa.me/91${phone}?text=Dear Customer, here is your bill from Hotel Muskan. Please scan the QR inside the image to pay.`);
     }
 
     function printBill() {
         totalSales += parseInt(document.getElementById('grand-total').innerText.replace('₹',''));
         document.getElementById('revenue-val').innerText = '₹' + totalSales;
         window.print();
-        tables[currentT] = [];
-        renderBill();
     }
 
     init();
