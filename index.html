@@ -3,119 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hotel Muskan POS</title>
+    <title>Hotel Muskan POS | Master Menu</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #d4af37; --dark: #050505; --card: #121212; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding-bottom: 70px; }
-        
-        .header { text-align: center; padding: 15px; border-bottom: 2px solid var(--gold); background: #000; }
-        .header h1 { margin: 0; color: var(--gold); font-size: 22px; letter-spacing: 2px; }
-        .header p { margin: 3px 0 0; font-size: 11px; font-style: italic; color: var(--gold); }
-
-        .tab-nav { display: flex; background: #111; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; color: #777; font-weight: bold; cursor: pointer; }
-        .tab-btn.active { color: var(--gold); border-bottom: 3px solid var(--gold); }
-
-        .page { display: none; padding: 10px; }
+        :root { --gold: #d4af37; --bg: #000; --card: #121212; --green: #25D366; --red: #ff4444; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 110px; -webkit-tap-highlight-color: transparent; }
+        header { text-align: center; padding: 12px; border-bottom: 1px solid var(--gold); background: #000; }
+        header h1 { font-family: 'Playfair Display'; font-size: 22px; color: var(--gold); margin: 0; }
+        .tabs { display: flex; background: #111; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; }
+        .tab { flex: 1; padding: 14px; text-align: center; font-size: 11px; font-weight: 800; color: #555; text-transform: uppercase; }
+        .tab.active { color: var(--gold); border-bottom: 3px solid var(--gold); background: rgba(212,175,55,0.05); }
+        .page { display: none; padding: 10px; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
-
-        .category-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; scrollbar-width: none; }
-        .category-scroll::-webkit-scrollbar { display: none; }
-        .cat-tag { background: #222; padding: 8px 15px; border-radius: 20px; font-size: 12px; white-space: nowrap; border: 1px solid #444; }
-        .cat-tag.active { background: var(--gold); color: black; border-color: var(--gold); }
-
-        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
-        .menu-item { background: var(--card); border: 1px solid #222; padding: 10px; border-radius: 12px; text-align: center; }
-        .menu-item b { display: block; font-size: 12px; min-height: 30px; margin-bottom: 8px; }
-        .btn-add { width: 100%; padding: 8px 0; background: none; border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; font-weight: bold; font-size: 10px; cursor: pointer; }
-
-        /* Luxury Invoice Design */
-        .invoice-container { padding: 10px; background: #000; }
-        .invoice { background: white; color: black; padding: 25px; border: 2px solid var(--gold); }
-        .invoice-h { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-        .cust-info-row { font-size: 12px; font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .bill-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ccc; font-size: 14px; }
-        .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 22px; margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        #qrcode { margin: 15px auto; width: 128px; display: flex; justify-content: center; }
-        .input-box { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
-        .action-btn { width: 100%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; margin-top: 10px; font-size: 14px; cursor: pointer; }
+        .table-strip { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 12px; padding-bottom: 5px; scrollbar-width: none; }
+        .t-btn { padding: 10px 18px; background: #111; border: 1px solid #333; border-radius: 8px; font-size: 11px; font-weight: bold; white-space: nowrap; color: #fff; }
+        .t-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(212,175,55,0.1); }
+        .t-btn.occupied { border-left: 3px solid var(--gold); }
 
+        .cat-strip { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 12px; padding-bottom: 5px; scrollbar-width: none; }
+        .cat-chip { padding: 8px 15px; background: #111; border: 1px solid #333; border-radius: 20px; font-size: 10px; white-space: nowrap; color: #777; font-weight: bold; }
+        .cat-chip.active { background: var(--gold); color: #000; border-color: var(--gold); }
+
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .item-card { background: var(--card); border: 1px solid #222; padding: 12px; border-radius: 12px; text-align: center; }
+        .item-card b { display: block; font-size: 12px; margin-bottom: 8px; height: 30px; overflow: hidden; }
+        
+        .portion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .btn-portion { padding: 8px; background: transparent; border: 1px solid #333; color: var(--gold); border-radius: 6px; font-size: 9px; font-weight: bold; }
+        .btn-add { width: 100%; padding: 10px; background: transparent; border: 1px solid var(--gold); color: var(--gold); border-radius: 8px; font-size: 10px; font-weight: bold; }
+
+        #bill-wrapper { background: #fff; color: #000; padding: 15px; border-radius: 2px; font-family: 'Courier New', Courier, monospace; }
+        .bill-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #ccc; font-size: 12px; align-items: center; }
+        .total-box { font-size: 20px; font-weight: 900; display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 10px; margin-top: 10px; }
+        .void-x { color: var(--red); font-weight: bold; margin-left: 10px; font-size: 16px; font-family: sans-serif; }
+
+        .action-bar { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px; border-top: 1px solid #333; display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 8px; box-sizing: border-box; }
+        .btn-act { padding: 15px 5px; border-radius: 10px; border: none; font-weight: 800; font-size: 10px; text-transform: uppercase; color: #fff; }
+        .bg-print { background: #333; } .bg-wa { background: var(--green); } .bg-settle { background: var(--gold); color: #000; }
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
-<div class="header no-print">
+<header class="no-print">
     <h1>HOTEL MUSKAN</h1>
-    <p>"A taste you'll remember"</p>
+</header>
+
+<div class="tabs no-print">
+    <div class="tab active" onclick="nav('menu-pg', this)">Orders</div>
+    <div class="tab" onclick="nav('bill-pg', this)">Bill</div>
+    <div class="tab" onclick="nav('stat-pg', this)">Report</div>
 </div>
 
-<div class="tab-nav no-print">
-    <button class="tab-btn active" onclick="openPage('menu', this)">MENU</button>
-    <button class="tab-btn" onclick="openPage('bill', this)">BILL</button>
-    <button class="tab-btn" onclick="openPage('admin', this)">ADMIN</button>
+<div id="menu-pg" class="page active no-print">
+    <div class="table-strip" id="table-strip"></div>
+    <div class="cat-strip" id="cat-strip"></div>
+    <div class="menu-grid" id="menu-list"></div>
 </div>
 
-<div id="menu" class="page active no-print">
-    <div class="category-scroll" id="cat-list"></div>
-    <div class="menu-grid" id="menu-grid"></div>
-</div>
-
-<div id="bill" class="page">
-    <div class="no-print">
-        <input type="text" id="cust-name-input" class="input-box" placeholder="Customer Name" oninput="updateUI()">
-        <input type="number" id="cust-phone-input" class="input-box" placeholder="Phone Number">
+<div id="bill-pg" class="page">
+    <div class="no-print" style="margin-bottom: 10px;">
+        <input type="tel" id="guest-ph" placeholder="WhatsApp No." style="width:100%; padding:14px; background:#111; border:1px solid #333; color:#fff; border-radius:10px; box-sizing: border-box;">
     </div>
-
-    <div class="invoice-container">
-        <div class="invoice" id="printable-area">
-            <div class="invoice-h">
-                <h2 style="margin:0; font-family: serif; letter-spacing: 2px;">HOTEL MUSKAN</h2>
-                <small style="font-weight: bold;">Near Overbridge, Bhagwanpur</small><br>
-                <small id="date-time" style="color: #555;"></small>
-            </div>
-            
-            <div id="display-cust-info" style="margin-bottom: 10px;">
-                <div class="cust-info-row"><span>Customer:</span> <span id="bill-cust-name">---</span></div>
-            </div>
-
-            <div id="bill-items"></div>
-            <div class="total-row"><span>NET TOTAL</span><span id="grand-total">₹0</span></div>
-            <div id="qrcode"></div>
-            <div style="text-align:center; font-size:11px; font-weight:bold; letter-spacing: 1px; border-top: 1px solid #000; padding-top: 10px;">A TASTE YOU'LL REMEMBER</div>
+    <div id="bill-wrapper">
+        <div style="text-align: center; border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 8px;">
+            <h3 style="margin: 0;">HOTEL MUSKAN</h3>
+            <small id="bill-meta" style="font-size: 10px;"></small>
         </div>
-    </div>
-
-    <div class="no-print">
-        <button class="action-btn" style="background:var(--gold)" onclick="printBill()">PRINT & SETTLE</button>
-        <button class="action-btn" style="background:#25D366; color:white" onclick="sendWhatsAppText()">WHATSAPP TEXT BILL</button>
+        <div id="bill-items"></div>
+        <div class="total-box"><span>TOTAL</span><span id="grand-total-val">₹0</span></div>
+        <div id="qrcode-box" style="display: flex; justify-content: center; margin-top: 15px;"></div>
     </div>
 </div>
 
-<div id="admin" class="page no-print">
-    <div id="tables-map" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;"></div>
-    <div style="margin-top:20px; padding:20px; background:var(--card); border:1px solid var(--gold); border-radius:10px;">
-        <p>Total Shift Revenue</p>
-        <h2 id="revenue-val" style="color:var(--gold); margin:0;">₹0</h2>
+<div id="stat-pg" class="page no-print">
+    <div style="background:var(--card); padding:25px; border-radius:20px; border-left:5px solid var(--gold); margin-bottom:15px;">
+        <small style="color:#888;">SALES TODAY</small><h2 id="report-rev" style="font-size:36px; color:var(--gold);">₹0</h2>
     </div>
+    <button onclick="resetData()" style="width:100%; background:var(--red); color:#fff; padding:15px; border:none; border-radius:12px; font-weight:bold;">RESET DATA</button>
+</div>
+
+<div class="action-bar no-print">
+    <button class="btn-act bg-print" onclick="window.print()">Print</button>
+    <button class="btn-act bg-wa" onclick="sendWhatsApp()">WhatsApp</button>
+    <button class="btn-act bg-settle" onclick="settleBill()">Settle</button>
 </div>
 
 <script>
     const upiID = "ajaykumar2569563@ybl";
-    let currentT = 1, totalSales = 0, tables = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]};
+    let curTable = 1;
+    let tablesData = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 7:[], 8:[], "Parcel":[]};
+    let sales = JSON.parse(localStorage.getItem('muskan_report')) || {rev: 0};
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    const menu = {
-     "🫓 Breads": [
+    const menuData = {
+        "🫓 Breads": [
             {n:"Plain Roti", p:7}, {n:"Butter Roti", p:10}, {n:"Tandoori Roti", p:10},
             {n:"Plain Naan", p:25}, {n:"Butter Naan", p:30}, {n:"Garlic Naan", p:40}
         ],
-        "🍚 Rice & Biryani": [
+        "🍚 Rice": [
             {n:"Plain Rice", p:70, h:40}, {n:"Jeera Rice", p:70, h:40},
             {n:"Veg Biryani", p:120, h:70}, {n:"Chicken Biryani", p:160, h:90}, {n:"Mutton Biryani", p:220, h:130}
         ],
-        "🥦 Veg Main": [
+        "🥦 Veg": [
             {n:"Dal Tadka", p:140, h:70}, {n:"Paneer Butter", p:240, h:120},
             {n:"Shahi Paneer", p:240, h:120}, {n:"Mix Veg", p:160, h:80}
         ],
@@ -130,76 +124,93 @@
         ]
     };
 
-    function openPage(id, btn) {
+    function playPop() {
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(500, audioCtx.currentTime); osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function nav(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-        if(id==='bill') updateUI();
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active'); el.classList.add('active');
+        if(id === 'bill-pg') renderBill();
     }
 
     function init() {
-        const catBox = document.getElementById('cat-list');
-        for(let cat in menu) { catBox.innerHTML += `<div class="cat-tag" onclick="filterMenu('${cat}', this)">${cat}</div>`; }
-        filterMenu("🫓 Breads", document.querySelector('.cat-tag'));
-        renderTables();
+        const tstrip = document.getElementById('table-strip');
+        for(let i=1; i<=8; i++) tstrip.innerHTML += `<div class="t-btn ${i==1?'active':''}" id="tbtn-${i}" onclick="setTable(${i})">T${i}</div>`;
+        tstrip.innerHTML += `<div class="t-btn" id="tbtn-Parcel" onclick="setTable('Parcel')">Parcel</div>`;
+        const cstrip = document.getElementById('cat-strip');
+        for(let cat in menuData) cstrip.innerHTML += `<div class="cat-chip" onclick="renderMenu('${cat}', this)">${cat}</div>`;
+        renderMenu("🫓 Breads", document.querySelector('.cat-chip'));
+        document.getElementById('report-rev').innerText = '₹' + sales.rev;
     }
 
-    function filterMenu(cat, el) {
-        document.querySelectorAll('.cat-tag').forEach(t => t.classList.remove('active')); el.classList.add('active');
-        const grid = document.getElementById('menu-grid'); grid.innerHTML = '';
-        menu[cat].forEach(item => {
-            grid.innerHTML += `<div class="menu-item"><b>${item.n}</b><button class="btn-add" onclick="addItem('${item.n}', ${item.p})">ADD ₹${item.p}</button></div>`;
+    function setTable(i) {
+        curTable = i; document.querySelectorAll('.t-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tbtn-'+i).classList.add('active');
+    }
+
+    function renderMenu(cat, el) {
+        document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); el.classList.add('active');
+        const list = document.getElementById('menu-list'); list.innerHTML = '';
+        menuData[cat].forEach(item => {
+            let html = `<div class="item-card"><b>${item.n}</b>`;
+            if(item.h) {
+                html += `<div class="portion-grid"><button class="btn-portion" onclick="addItem('${item.n} (H)', ${item.h})">Half ₹${item.h}</button><button class="btn-portion" onclick="addItem('${item.n} (F)', ${item.p})">Full ₹${item.p}</button></div>`;
+            } else {
+                html += `<button class="btn-add" onclick="addItem('${item.n}', ${item.p})">Add ₹${item.p}</button>`;
+            }
+            list.innerHTML += html + `</div>`;
         });
     }
 
-    function addItem(n, p) { tables[currentT].push({n, p}); }
+    function addItem(n, p) {
+        tablesData[curTable].push({n, p, id: Date.now()});
+        document.getElementById('tbtn-'+curTable).classList.add('occupied');
+        playPop();
+    }
 
-    function updateUI() {
-        const box = document.getElementById('bill-items'); box.innerHTML = ''; let total = 0, summary = {};
-        tables[currentT].forEach(item => { summary[item.n] = (summary[item.n] || {qty:0, p:item.p}); summary[item.n].qty++; });
-        for(let n in summary) { let line = summary[n].qty * summary[n].p; total += line; box.innerHTML += `<div class="bill-row"><span>${summary[n].qty} x ${n}</span><span>₹${line}</span></div>`; }
-        document.getElementById('grand-total').innerText = '₹' + total;
-        document.getElementById('bill-cust-name').innerText = document.getElementById('cust-name-input').value || '---';
-        document.getElementById('date-time').innerText = new Date().toLocaleString();
-        const qr = document.getElementById("qrcode"); qr.innerHTML = "";
+    function renderBill() {
+        const body = document.getElementById('bill-items'); body.innerHTML = '';
+        let total = 0;
+        tablesData[curTable].forEach((item, index) => {
+            total += item.p;
+            body.innerHTML += `<div class="bill-row"><span>${item.n}</span><span>₹${item.p} <span class="no-print void-x" onclick="voidItem(${index})">×</span></span></div>`;
+        });
+        document.getElementById('grand-total-val').innerText = '₹' + total;
+        document.getElementById('bill-meta').innerText = `ID: ${curTable} | ${new Date().toLocaleTimeString()}`;
+        const qr = document.getElementById("qrcode-box"); qr.innerHTML = "";
         if(total > 0) new QRCode(qr, {text: `upi://pay?pa=${upiID}&am=${total}&cu=INR`, width: 120, height: 120});
     }
 
-    function renderTables() {
-        const map = document.getElementById('tables-map'); map.innerHTML = '';
-        for(let i=1; i<=6; i++) { map.innerHTML += `<button onclick="setT(${i})" style="padding:15px; background:${i==currentT? 'var(--gold)':'#222'}; color:${i==currentT? 'black':'white'}; border:none; border-radius:10px;">T-${i}</button>`; }
+    function voidItem(index) {
+        tablesData[curTable].splice(index, 1);
+        if(tablesData[curTable].length === 0) document.getElementById('tbtn-'+curTable).classList.remove('occupied');
+        renderBill();
     }
 
-    function setT(i) { currentT = i; renderTables(); }
-
-    function sendWhatsAppText() {
-        const phone = document.getElementById('cust-phone-input').value;
-        const name = document.getElementById('cust-name-input').value || 'Guest';
-        if(!phone) return alert("Enter Phone Number");
-
-        let text = `*HOTEL MUSKAN*%0A_Near Overbridge, Bhagwanpur_%0A--------------------------%0A*Customer:* ${name}%0A*Table:* ${currentT}%0A--------------------------%0A`;
-        let total = 0;
-        let summary = {};
-        tables[currentT].forEach(item => { summary[item.n] = (summary[item.n] || {qty:0, p:item.p}); summary[item.n].qty++; });
-        
-        for(let n in summary) {
-            let line = summary[n].qty * summary[n].p;
-            total += line;
-            text += `${summary[n].qty} x ${n} = ₹${line}%0A`;
-        }
-        
-        text += `--------------------------%0A*TOTAL: ₹${total}*%0A--------------------------%0A_A taste you'll remember_`;
-        window.open(`https://wa.me/91${phone}?text=${text}`);
+    async function sendWhatsApp() {
+        const ph = document.getElementById('guest-ph').value;
+        const total = document.getElementById('grand-total-val').innerText.replace('₹','');
+        let msg = `*HOTEL MUSKAN BILL*%0A------------------%0A`;
+        tablesData[curTable].forEach(i => msg += `• ${i.n}: ₹${i.p}%0A`);
+        msg += `------------------%0A*TOTAL: ₹${total}*%0A%0A*Pay UPI:* upi://pay?pa=${upiID}%26am=${total}%26cu=INR`;
+        const canvas = await html2canvas(document.getElementById('bill-wrapper'), { scale: 2 });
+        const link = document.createElement('a'); link.download = `Bill.png`; link.href = canvas.toDataURL(); link.click();
+        window.open(`https://wa.me/${ph ? '91'+ph : ''}?text=${msg}`);
     }
 
-    function printBill() {
-        totalSales += parseInt(document.getElementById('grand-total').innerText.replace('₹',''));
-        document.getElementById('revenue-val').innerText = '₹' + totalSales;
-        window.print();
-        tables[currentT] = [];
-        updateUI();
+    function settleBill() {
+        const total = parseInt(document.getElementById('grand-total-val').innerText.replace('₹',''));
+        if(total === 0) return;
+        sales.rev += total; localStorage.setItem('muskan_report', JSON.stringify(sales));
+        tablesData[curTable] = []; document.getElementById('tbtn-'+curTable).classList.remove('occupied');
+        alert("Settle Done!"); nav('stat-pg', document.querySelectorAll('.tab')[2]);
     }
+
+    function resetData() { if(confirm("Reset Sales?")) { sales.rev = 0; localStorage.setItem('muskan_report', JSON.stringify(sales)); location.reload(); } }
 
     init();
 </script>
