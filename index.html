@@ -114,11 +114,27 @@
     let stats = JSON.parse(localStorage.getItem('muskan_stats_v6')) || {rev: 0, orders: 0};
 
     const menuData = {
-        "🫓 Breads": [{n:"Plain Roti", p:7}, {n:"Butter Roti", p:10}, {n:"Butter Naan", p:30}, {n:"Garlic Naan", p:40}],
-        "🍚 Rice": [{n:"Plain Rice", p:70, h:40}, {n:"Veg Biryani", p:120, h:70}, {n:"Chicken Biryani", p:160, h:90}, {n:"Mutton Biryani", p:220, h:130}],
-        "🥦 Veg": [{n:"Dal Tadka", p:140, h:70}, {n:"Paneer Butter", p:240, h:120}, {n:"Mix Veg", p:160, h:80}],
-        "🍗 Non-Veg": [{n:"Chicken Curry", p:180, h:90}, {n:"Mutton Curry", p:240, h:120}],
-        "🥤 Drinks": [{n:"Mineral Water", p:20}, {n:"Cold Drink", p:40}]
+       "🫓 Breads": [
+            {n:"Plain Roti", p:7}, {n:"Butter Roti", p:10}, {n:"Tandoori Roti", p:10},
+            {n:"Plain Naan", p:25}, {n:"Butter Naan", p:30}, {n:"Garlic Naan", p:40}
+        ],
+        "🍚 Rice & Biryani": [
+            {n:"Plain Rice", p:70, h:40}, {n:"Jeera Rice", p:70, h:40},
+            {n:"Veg Biryani", p:120, h:70}, {n:"Chicken Biryani", p:160, h:90}, {n:"Mutton Biryani", p:220, h:130}
+        ],
+        "🥦 Veg Main": [
+            {n:"Dal Tadka", p:140, h:70}, {n:"Paneer Butter", p:240, h:120},
+            {n:"Shahi Paneer", p:240, h:120}, {n:"Mix Veg", p:160, h:80}
+        ],
+        "🍗 Non-Veg": [
+            {n:"Chicken Curry", p:180, h:90}, {n:"Chicken Butter", p:240, h:120}, {n:"Mutton Curry", p:240, h:120}
+        ],
+        "🍟 Starters": [
+            {n:"Veg Manchurian", p:120, h:70}, {n:"Chicken Chilli", p:240, h:120}
+        ],
+        "🥤 Drinks": [
+            {n:"Mineral Water", p:20}, {n:"Tea", p:10}, {n:"Cold Drink", p:40}
+        ]
     };
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
