@@ -3,54 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hotel Muskan | Sovereign POS v6</title>
+    <title>Hotel Muskan POS | Elite Security</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #d4af37; --bg: #000; --surface: #111; --green: #25D366; --blue: #0078d4; --red: #ff4444; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 120px; -webkit-tap-highlight-color: transparent; }
+        :root { --gold: #d4af37; --bg: #000; --card: #111; --green: #25D366; --red: #ff4444; --blue: #3498db; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 110px; -webkit-tap-highlight-color: transparent; }
         
         header { text-align: center; padding: 15px; border-bottom: 1px solid var(--gold); background: #000; }
-        header h1 { font-family: 'Playfair Display'; font-size: 24px; color: var(--gold); margin: 0; }
+        header h1 { font-family: 'Playfair Display'; font-size: 24px; color: var(--gold); margin: 0; letter-spacing: 1px; }
 
-        .tabs { display: flex; background: #111; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; }
-        .tab { flex: 1; padding: 15px; text-align: center; font-size: 11px; font-weight: 800; color: #555; text-transform: uppercase; }
+        .tabs { display: flex; background: #0a0a0a; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; }
+        .tab { flex: 1; padding: 16px; text-align: center; font-size: 11px; font-weight: 800; color: #444; text-transform: uppercase; }
         .tab.active { color: var(--gold); border-bottom: 3px solid var(--gold); background: rgba(212, 175, 55, 0.05); }
 
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        .page { display: none; padding: 12px; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Search & Scrollers */
-        .search-bar { width: 100%; padding: 12px; background: #111; border: 1px solid #333; border-radius: 10px; color: #fff; margin-bottom: 10px; font-size: 14px; box-sizing: border-box; }
         .scroller { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 12px; scrollbar-width: none; }
-        .chip { padding: 12px 20px; background: #111; border: 1px solid #333; border-radius: 10px; font-size: 11px; font-weight: bold; white-space: nowrap; }
+        .chip { padding: 12px 20px; background: #111; border: 1px solid #222; border-radius: 10px; font-size: 11px; font-weight: bold; white-space: nowrap; }
         .chip.active { border-color: var(--gold); color: var(--gold); background: rgba(212,175,55,0.1); }
-        .chip.occupied { border-left: 4px solid var(--gold); }
+        .chip.live { border-left: 4px solid var(--gold); }
 
-        /* Menu Grid */
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .item-card { background: var(--surface); border: 1px solid #222; padding: 15px; border-radius: 15px; text-align: center; }
-        .item-card b { display: block; font-size: 13px; margin-bottom: 12px; height: 32px; overflow: hidden; }
+        .item-card { background: var(--card); border: 1px solid #222; padding: 12px; border-radius: 15px; text-align: center; }
+        .item-card b { display: block; font-size: 13px; margin-bottom: 10px; height: 32px; overflow: hidden; }
         
-        .portion-box { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-        .p-btn { padding: 8px; background: #000; border: 1px solid #333; color: var(--gold); border-radius: 6px; font-size: 9px; font-weight: bold; }
-        .p-btn.active { background: var(--gold); color: #000; }
+        .qty-box { display: flex; align-items: center; justify-content: center; gap: 10px; background: #000; border-radius: 8px; border: 1px solid #222; padding: 4px; }
+        .q-btn { width: 32px; height: 32px; border: none; border-radius: 5px; background: #1a1a1a; color: var(--gold); font-size: 20px; font-weight: 900; }
 
-        /* Receipt View */
-        #bill-view { background: #fff; color: #000; padding: 20px; border-radius: 2px; font-family: 'Courier New', Courier, monospace; }
-        .bill-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #ccc; font-size: 12px; }
-        .total-box { font-size: 22px; font-weight: 900; display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 10px; margin-top: 15px; }
+        #folio-view { background: #fff; color: #000; padding: 20px; border-radius: 2px; font-family: 'Courier New', Courier, monospace; }
+        .f-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #ccc; font-size: 13px; align-items: center; }
+        .void-btn { color: var(--red); font-weight: bold; padding: 0 10px; font-size: 18px; }
+        .f-total { font-size: 24px; font-weight: 900; display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 15px; margin-top: 15px; }
 
-        /* Reports */
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .stat-box { background: #111; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); }
+        .admin-card { background: #111; padding: 20px; border-radius: 15px; border-left: 5px solid var(--gold); margin-bottom: 15px; }
+        .stat-val { font-size: 34px; font-weight: 900; color: var(--gold); margin: 5px 0; }
+        input, select { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; margin-bottom: 10px; font-size: 14px; box-sizing: border-box; }
 
-        /* Footer */
-        .footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 12px; border-top: 1px solid #333; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; box-sizing: border-box; }
-        .btn-f { padding: 16px 5px; border-radius: 12px; border: none; font-weight: 900; font-size: 10px; text-transform: uppercase; color: #fff; }
-
-        input, textarea { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; margin-bottom: 10px; font-size: 14px; box-sizing: border-box; }
+        .footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 12px; border-top: 1px solid #222; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; box-sizing: border-box; }
+        .cmd-btn { padding: 15px 2px; border-radius: 10px; border: none; font-weight: 900; font-size: 9px; text-transform: uppercase; color: #fff; }
     </style>
 </head>
 <body>
@@ -60,216 +53,230 @@
 </header>
 
 <div class="tabs no-print">
-    <div class="tab active" onclick="nav('pos-pg', this)">Menu</div>
-    <div class="tab" onclick="nav('bill-pg', this)">Checkout</div>
-    <div class="tab" onclick="nav('stat-pg', this)">Report</div>
+    <div class="tab active" onclick="nav('pos', this)">Order</div>
+    <div class="tab" onclick="nav('folio', this)">Bill</div>
+    <div class="tab" onclick="unlockAdmin()">Hisaab 🔒</div>
 </div>
 
-<div id="pos-pg" class="page active">
-    <input type="text" class="search-bar" id="menu-search" placeholder="Search dish (e.g. Biryani)" oninput="renderMenuList()">
-    <div class="scroller" id="table-strip"></div>
-    <div class="scroller" id="cat-strip"></div>
-    <div class="menu-grid" id="menu-list"></div>
+<div id="pos" class="page active">
+    <div class="scroller" id="t-scroll"></div>
+    <div class="scroller" id="c-scroll"></div>
+    <div class="menu-grid" id="m-list"></div>
 </div>
 
-<div id="bill-pg" class="page">
-    <input type="tel" id="mobile" placeholder="Customer WhatsApp Number">
-    <input type="number" id="discount" placeholder="Discount Amount (₹)" oninput="renderBill()">
-    <textarea id="notes" placeholder="Order Notes (e.g. No spicy, extra butter)" oninput="renderBill()"></textarea>
+<div id="folio" class="page">
+    <input type="tel" id="c-phone" placeholder="WhatsApp Number">
+    <div style="display: flex; gap: 8px;">
+        <input type="number" id="c-discount" placeholder="Discount (₹)" oninput="renderBill()">
+        <button onclick="addPacking()" style="background:var(--blue); color:#fff; border:none; border-radius:10px; padding:0 15px; font-weight:bold; margin-bottom:10px; font-size:10px;">+Packing</button>
+    </div>
     
-    <div id="bill-view">
+    <div id="folio-view">
         <div style="text-align: center; border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 10px;">
             <h3 style="margin: 0;">HOTEL MUSKAN</h3>
-            <small id="bill-meta" style="font-size: 11px;"></small>
+            <small id="inv-meta" style="font-size: 11px;"></small>
         </div>
-        <div id="bill-items"></div>
-        <div id="bill-notes-disp" style="font-size: 10px; font-style: italic; margin-top: 10px;"></div>
-        <div class="total-box"><span>TOTAL</span><span id="g-total">₹0</span></div>
-        <div id="qr-box" style="display: flex; justify-content: center; margin-top: 20px;"></div>
+        <div id="inv-items"></div>
+        <div id="disc-line" style="color:var(--red); font-size:12px; font-weight:bold; display:none; text-align:right;"></div>
+        <div class="f-total"><span>TOTAL</span><span id="g-total-val">₹0</span></div>
+        <div id="qr-folio" style="display:flex; justify-content:center; margin-top:15px;"></div>
     </div>
 </div>
 
-<div id="stat-pg" class="page">
-    <div class="stat-box" style="margin-bottom: 15px; padding: 25px;">
-        <small style="color:#888;">GROSS REVENUE</small>
-        <h2 id="rep-rev" style="font-size: 38px; color: var(--gold); margin: 5px 0;">₹0</h2>
+<div id="admin" class="page">
+    <div class="admin-card">
+        <small>AAJ KA PROFIT (NET)</small>
+        <div class="stat-val" id="st-profit">₹0</div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px;">
+            <span style="color:var(--green)">Sales: <b id="st-rev">₹0</b></span>
+            <span style="color:var(--red)">Kharcha: <b id="st-exp">₹0</b></span>
+        </div>
     </div>
-    <div class="stat-grid">
-        <div class="stat-box"><small>ORDERS</small><h3 id="rep-orders">0</h3></div>
-        <div class="stat-box"><small>AVG BILL</small><h3 id="rep-avg">₹0</h3></div>
+
+    <div class="admin-card" style="border-left-color: var(--blue);">
+        <h4 style="margin:0 0 10px 0;">Record Daily Expense</h4>
+        <input type="text" id="exp-name" placeholder="Expense Reason (Milk, Sabzi, Gas)">
+        <input type="number" id="exp-amt" placeholder="Amount (₹)">
+        <button onclick="addExpense()" style="width:100%; padding:12px; background:var(--blue); color:#fff; border:none; border-radius:10px; font-weight:bold;">Save Kharcha</button>
     </div>
-    <button onclick="resetData()" style="width:100%; background:var(--red); color:#fff; padding:15px; border:none; border-radius:12px; font-weight:bold; margin-top:20px;">RESET DAY</button>
+
+    <div class="admin-card" style="border-left-color: #333;">
+        <h4 style="margin:0 0 10px 0;">Recent Orders</h4>
+        <div id="history-list"></div>
+    </div>
+    <button onclick="resetApp()" style="width:100%; color:var(--red); border:none; background:transparent; font-size:11px; padding:20px;">RESET DATABASE</button>
 </div>
 
 <div class="footer no-print">
-    <button class="btn-f" style="background:var(--green);" onclick="sendText('wa')">WhatsApp</button>
-    <button class="btn-f" style="background:var(--blue);" onclick="sendText('sms')">SMS</button>
-    <button class="btn-f" style="background:var(--gold); color:#000;" onclick="settle()">Settle</button>
+    <button class="cmd-btn" style="background:#222;" onclick="window.print()">Print</button>
+    <button class="cmd-btn" style="background:var(--blue);" onclick="sendKOT()">Kitchen</button>
+    <button class="cmd-btn" style="background:var(--green);" onclick="transmit()">WhatsApp</button>
+    <button class="cmd-btn" style="background:var(--gold); color:#000;" onclick="settle()">Settle</button>
 </div>
 
 <script>
     const upiID = "ajaykumar2569563@ybl";
+    const adminPass = "123";
     let curT = 1;
     let tables = {1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, "Parcel":{}};
-    let stats = JSON.parse(localStorage.getItem('muskan_stats_v6')) || {rev: 0, orders: 0};
+    let db = JSON.parse(localStorage.getItem('muskan_pro_v10')) || { rev: 0, exp: 0, history: [] };
 
-    const menuData = {
-       "🫓 Breads": [
-            {n:"Plain Roti", p:7}, {n:"Butter Roti", p:10}, {n:"Tandoori Roti", p:10},
-            {n:"Plain Naan", p:25}, {n:"Butter Naan", p:30}, {n:"Garlic Naan", p:40}
-        ],
-        "🍚 Rice & Biryani": [
-            {n:"Plain Rice", p:70, h:40}, {n:"Jeera Rice", p:70, h:40},
-            {n:"Veg Biryani", p:120, h:70}, {n:"Chicken Biryani", p:160, h:90}, {n:"Mutton Biryani", p:220, h:130}
-        ],
-        "🥦 Veg Main": [
-            {n:"Dal Tadka", p:140, h:70}, {n:"Paneer Butter", p:240, h:120},
-            {n:"Shahi Paneer", p:240, h:120}, {n:"Mix Veg", p:160, h:80}
+    const menu = {
+        "🥘 Paneer & Veg": [
+            {n:"Paneer Do Pyaza", p:240, h:120}, {n:"Paneer Butter", p:260, h:130},
+            {n:"Shahi Paneer", p:260, h:130}, {n:"Dal Tadka", p:140, h:70},
+            {n:"Mix Veg", p:160, h:80}, {n:"Mattar Panner", p:160, h:80}
         ],
         "🍗 Non-Veg": [
-            {n:"Chicken Curry", p:180, h:90}, {n:"Chicken Butter", p:240, h:120}, {n:"Mutton Curry", p:240, h:120}
+            {n:"Chicken Do Pyaza", p:260, h:130}, {n:"Chicken Curry", p:180, h:90},
+            {n:"Chicken Butter", p:240, h:120}, {n:"Fish Curry", p:200, h:100},
+            {n:"Egg Curry", p:120, h:60}, {n:"Omlate Curry", p:140, h:70}
         ],
-        "🍟 Starters": [
-            {n:"Veg Manchurian", p:120, h:70}, {n:"Chicken Chilli", p:240, h:120}
+        "🍚 Rice": [
+            {n:"Plain Rice", p:70, h:40}, {n:"Jeera Rice", p:80, h:40}
         ],
-        "🥤 Drinks": [
-            {n:"Mineral Water", p:20}, {n:"Tea", p:10}, {n:"Cold Drink", p:40}
+        "🫓 Breads": [
+            {n:"Plain Roti", p:6}, {n:"Butter Roti", p:12}
+        ],
+        "🥤 Starters/Extras": [
+            {n:"Chicken Chilli", p:240, h:120}, {n:"Mineral Water", p:20},
+            {n:"Tea", p:10}, {n:"Cold Drink", p:40}
         ]
     };
 
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function pop() {
-        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-        o.frequency.setValueAtTime(600, audioCtx.currentTime); o.connect(g); g.connect(audioCtx.destination);
-        o.start(); o.stop(audioCtx.currentTime + 0.1);
-    }
+    const audio = new (window.AudioContext || window.webkitAudioContext)();
+    function pop() { const o = audio.createOscillator(); const g = audio.createGain(); o.frequency.setValueAtTime(600, audio.currentTime); o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime + 0.1); }
 
     function nav(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); el.classList.add('active');
-        if(id === 'bill-pg') renderBill();
-        if(id === 'stat-pg') updateStats();
+        document.getElementById(id).classList.add('active'); 
+        if(el) el.classList.add('active');
+        if(id === 'folio') renderBill();
+        if(id === 'admin') updateAdmin();
+    }
+
+    function unlockAdmin() {
+        const pass = prompt("Enter Admin Password:");
+        if(pass === adminPass) {
+            nav('admin', document.querySelectorAll('.tab')[2]);
+        } else {
+            alert("Wrong Password!");
+        }
     }
 
     function init() {
-        const ts = document.getElementById('table-strip');
+        const ts = document.getElementById('t-scroll');
         for(let i=1; i<=8; i++) ts.innerHTML += `<div class="chip ${i==1?'active':''}" id="tb-${i}" onclick="setT('${i}')">T${i}</div>`;
         ts.innerHTML += `<div class="chip" id="tb-Parcel" onclick="setT('Parcel')">Parcel</div>`;
-        const cs = document.getElementById('cat-strip');
-        for(let cat in menuData) cs.innerHTML += `<div class="chip" onclick="setCat('${cat}', this)">${cat}</div>`;
-        setT(1); setCat("🫓 Breads", cs.children[0]);
+        const cs = document.getElementById('c-scroll');
+        for(let cat in menu) cs.innerHTML += `<div class="chip" onclick="setCat('${cat}', this)">${cat}</div>`;
+        setT(1); setCat("🥘 Paneer & Veg", cs.children[0]);
     }
 
     function setT(i) {
-        curT = i; document.querySelectorAll('#table-strip .chip').forEach(c => c.classList.remove('active'));
-        document.getElementById('tb-'+i).classList.add('active'); renderMenuList();
+        curT = i; document.querySelectorAll('#t-scroll .chip').forEach(c => c.classList.remove('active'));
+        document.getElementById('tb-'+i).classList.add('active'); drawMenu();
     }
 
     function setCat(cat, el) {
-        document.querySelectorAll('#cat-strip .chip').forEach(c => c.classList.remove('active'));
-        el.classList.add('active'); renderMenuList();
+        document.querySelectorAll('#c-scroll .chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active'); drawMenu();
     }
 
-    function renderMenuList() {
-        const activeCat = document.querySelector('#cat-strip .chip.active').innerText;
-        const search = document.getElementById('menu-search').value.toLowerCase();
-        const list = document.getElementById('menu-list'); list.innerHTML = '';
-        
-        const items = search ? Object.values(menuData).flat() : menuData[activeCat];
-        
-        items.forEach(item => {
-            if(search && !item.n.toLowerCase().includes(search)) return;
+    function drawMenu() {
+        const cat = document.querySelector('#c-scroll .chip.active').innerText;
+        const list = document.getElementById('m-list'); list.innerHTML = '';
+        menu[cat].forEach(item => {
             const qty = tables[curT][item.n] ? tables[curT][item.n].q : 0;
-            const hqty = tables[curT][item.n + ' (H)'] ? tables[curT][item.n + ' (H)'].q : 0;
-            
+            const hqty = tables[curT][item.n+' (H)'] ? tables[curT][item.n+' (H)'].q : 0;
             let html = `<div class="item-card"><b>${item.n}</b>`;
             if(item.h) {
-                html += `<div class="portion-box">
-                    <button class="p-btn" onclick="updateQty('${item.n} (H)', ${item.h}, 1)">H: ${hqty}</button>
-                    <button class="p-btn" onclick="updateQty('${item.n}', ${item.p}, 1)">F: ${qty}</button>
+                html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                    <button class="q-btn" style="font-size:10px" onclick="updQty('${item.n} (H)', ${item.h}, 1)">H:${hqty}</button>
+                    <button class="q-btn" style="font-size:10px" onclick="updQty('${item.n}', ${item.p}, 1)">F:${qty}</button>
                 </div>`;
             } else {
-                html += `<div class="qty-box" style="display:flex; justify-content:center; align-items:center; gap:10px; background:#000; padding:5px; border-radius:8px;">
-                    <button class="p-btn" onclick="updateQty('${item.n}', ${item.p}, -1)">-</button>
-                    <span style="font-weight:900; width:20px;">${qty}</span>
-                    <button class="p-btn" onclick="updateQty('${item.n}', ${item.p}, 1)">+</button>
+                html += `<div class="qty-box">
+                    <button class="q-btn" onclick="updQty('${item.n}', ${item.p}, -1)">-</button>
+                    <span style="font-weight:900;">${qty}</span>
+                    <button class="q-btn" onclick="updQty('${item.n}', ${item.p}, 1)">+</button>
                 </div>`;
             }
             list.innerHTML += html + `</div>`;
         });
     }
 
-    function updateQty(n, p, d) {
+    function updQty(n, p, d) {
         if(!tables[curT][n]) tables[curT][n] = {q:0, p:p};
         tables[curT][n].q += d;
         if(tables[curT][n].q <= 0) delete tables[curT][n];
-        const chip = document.getElementById('tb-'+curT);
-        if(Object.keys(tables[curT]).length > 0) chip.classList.add('occupied');
-        else chip.classList.remove('occupied');
-        pop(); renderMenuList();
+        document.getElementById('tb-'+curT).classList.toggle('live', Object.keys(tables[curT]).length > 0);
+        pop(); drawMenu();
     }
 
-    function getBillData() {
+    function voidItem(n) { delete tables[curT][n]; if(Object.keys(tables[curT]).length === 0) document.getElementById('tb-'+curT).classList.remove('live'); pop(); renderBill(); }
+
+    function addPacking() { updQty('Packing Charges', 10, 1); }
+
+    function getBill() {
         let subtotal = 0, txt = `*HOTEL MUSKAN BILL*%0A------------------%0A`;
         let rows = '';
-        const disc = parseInt(document.getElementById('discount').value) || 0;
-        const notes = document.getElementById('notes').value;
-
+        const disc = parseInt(document.getElementById('c-discount').value) || 0;
         for(let n in tables[curT]) {
             let i = tables[curT][n]; let line = i.q * i.p; subtotal += line;
-            rows += `<div class="bill-row"><span>${i.q}x ${n}</span><span>₹${line}</span></div>`;
+            rows += `<div class="f-row"><span>${i.q}x ${n}</span><span>₹${line} <span class="no-print void-btn" onclick="voidItem('${n}')">×</span></span></div>`;
             txt += `${i.q}x ${n} = ₹${line}%0A`;
         }
-        
         const total = Math.max(0, subtotal - disc);
-        if(disc > 0) {
-            rows += `<div class="bill-row" style="color:red"><span>Discount</span><span>-₹${disc}</span></div>`;
-            txt += `Discount: -₹${disc}%0A`;
-        }
-        
-        if(notes) txt += `%0A*Notes:* ${notes}%0A`;
-
-        const upiLink = `upi://pay?pa=${upiID}%26am=${total}%26cu=INR`;
-        txt += `------------------%0A*TOTAL: ₹${total}*%0A%0A*Pay UPI:*%0A${upiLink}`;
-        return { total, txt, rows, notes };
+        if(disc > 0) txt += `Discount: -₹${disc}%0A`;
+        txt += `------------------%0A*TOTAL: ₹${total}*%0A%0A*Pay UPI:* upi://pay?pa=${upiID}%26am=${total}%26cu=INR`;
+        return { total, txt, rows, disc };
     }
 
     function renderBill() {
-        const data = getBillData();
-        document.getElementById('bill-items').innerHTML = data.rows;
-        document.getElementById('g-total').innerText = '₹' + data.total;
-        document.getElementById('bill-notes-disp').innerText = data.notes ? "Notes: " + data.notes : "";
-        document.getElementById('bill-meta').innerText = `ID: ${curT} | ${new Date().toLocaleTimeString()}`;
-        const qr = document.getElementById('qr-box'); qr.innerHTML = "";
-        if(data.total > 0) new QRCode(qr, {text: `upi://pay?pa=${upiID}&am=${data.total}&cu=INR`, width: 140, height: 140});
+        const data = getBill();
+        document.getElementById('inv-items').innerHTML = data.rows;
+        document.getElementById('g-total-val').innerText = '₹' + data.total;
+        document.getElementById('inv-meta').innerText = `ID: ${curT} | ${new Date().toLocaleTimeString()}`;
+        document.getElementById('disc-line').innerText = data.disc > 0 ? `-₹${data.disc} Discount Applied` : "";
+        document.getElementById('disc-line').style.display = data.disc > 0 ? "block" : "none";
+        const qr = document.getElementById('qr-folio'); qr.innerHTML = "";
+        if(data.total > 0) new QRCode(qr, {text: `upi://pay?pa=${upiID}&am=${data.total}&cu=INR`, width: 130, height: 130});
     }
 
-    function sendText(type) {
-        const ph = document.getElementById('mobile').value;
-        const data = getBillData();
-        if(data.total === 0) return alert("Empty Bill!");
-        if(type === 'wa') window.open(`https://wa.me/${ph ? '91'+ph : ''}?text=${data.txt}`);
-        else window.open(`sms:${ph ? '+91'+ph : ''}?body=${encodeURIComponent(decodeURIComponent(data.txt).replace(/\*/g, ''))}`);
-    }
+    function transmit() { const ph = document.getElementById('c-phone').value; const data = getBill(); if(data.total === 0) return; window.open(`https://wa.me/${ph ? '91'+ph : ''}?text=${data.txt}`); }
+
+    function sendKOT() { let kot = `*KITCHEN ORDER (T-${curT})*%0A------------------%0A`; for(let n in tables[curT]) kot += `• ${tables[curT][n].q} x ${n}%0A`; window.open(`https://wa.me/?text=${kot}`); }
 
     function settle() {
-        const total = parseInt(document.getElementById('g-total').innerText.replace('₹',''));
-        if(total === 0) return;
-        stats.rev += total; stats.orders++;
-        localStorage.setItem('muskan_stats_v6', JSON.stringify(stats));
-        tables[curT] = {}; document.getElementById('tb-'+curT).classList.remove('occupied');
-        document.getElementById('discount').value = ''; document.getElementById('notes').value = '';
-        alert("Settled!"); nav('stat-pg', document.querySelectorAll('.tab')[2]);
+        const t = parseInt(document.getElementById('g-total-val').innerText.replace('₹',''));
+        if(t === 0) return;
+        db.rev += t; db.history.unshift({ time: new Date().toLocaleTimeString(), amt: t, t: curT });
+        db.history = db.history.slice(0, 5);
+        localStorage.setItem('muskan_pro_v10', JSON.stringify(db));
+        tables[curT] = {}; document.getElementById('tb-'+curT).classList.remove('live');
+        document.getElementById('c-discount').value = '';
+        alert("Settled!"); nav('admin'); nav('pos', document.querySelectorAll('.tab')[0]);
     }
 
-    function updateStats() {
-        document.getElementById('rep-rev').innerText = '₹' + stats.rev;
-        document.getElementById('rep-orders').innerText = stats.orders;
-        document.getElementById('rep-avg').innerText = '₹' + (stats.orders > 0 ? Math.round(stats.rev / stats.orders) : 0);
+    function addExpense() {
+        const amt = parseInt(document.getElementById('exp-amt').value);
+        if(!amt) return;
+        db.exp += amt; localStorage.setItem('muskan_pro_v10', JSON.stringify(db));
+        document.getElementById('exp-name').value = ''; document.getElementById('exp-amt').value = '';
+        updateAdmin();
     }
 
-    function resetData() { if(confirm("Reset Day?")) { stats = {rev:0, orders:0}; localStorage.setItem('muskan_stats_v6', JSON.stringify(stats)); updateStats(); } }
+    function updateAdmin() {
+        document.getElementById('st-rev').innerText = '₹' + db.rev;
+        document.getElementById('st-exp').innerText = '₹' + db.exp;
+        document.getElementById('st-profit').innerText = '₹' + (db.rev - db.exp);
+        const list = document.getElementById('history-list'); list.innerHTML = '';
+        db.history.forEach(h => list.innerHTML += `<div class="f-row" style="color:#888; border-bottom:1px solid #222"><span>T-${h.t} @ ${h.time}</span><b>₹${h.amt}</b></div>`);
+    }
+
+    function resetApp() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); } }
 
     init();
 </script>
