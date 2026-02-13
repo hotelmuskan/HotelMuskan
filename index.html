@@ -2,284 +2,801 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hotel Muskan POS | Elite Security</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Muskan | Billing System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        :root { --gold: #d4af37; --bg: #000; --card: #111; --green: #25D366; --red: #ff4444; --blue: #3498db; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 110px; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Montserrat', sans-serif; background-color: #1a1a1a; color: #e5e5e5; }
+        .gold-text { color: #D4AF37; }
+        .border-gold { border-color: #D4AF37; }
+        .bg-gold { background-color: #D4AF37; color: black; }
+        .bg-gold:hover { background-color: #b38728; }
         
-        header { text-align: center; padding: 15px; border-bottom: 1px solid var(--gold); background: #000; }
-        header h1 { font-family: 'Playfair Display'; font-size: 24px; color: var(--gold); margin: 0; letter-spacing: 1px; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0F0F0F; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
-        .tabs { display: flex; background: #0a0a0a; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; }
-        .tab { flex: 1; padding: 16px; text-align: center; font-size: 11px; font-weight: 800; color: #444; text-transform: uppercase; }
-        .tab.active { color: var(--gold); border-bottom: 3px solid var(--gold); background: rgba(212, 175, 55, 0.05); }
+        /* Receipt Print Styles */
+        @media print {
+            body * { visibility: hidden; }
+            .print-area, .print-area * { visibility: visible; }
+            .print-area { position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; padding: 0; margin: 0; }
+            .no-print { display: none; }
+            /* Hide modals during print */
+            #qr-modal, #dashboard-modal { display: none !important; }
+        }
 
-        .page { display: none; padding: 12px; animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .scroller { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 12px; scrollbar-width: none; }
-        .chip { padding: 12px 20px; background: #111; border: 1px solid #222; border-radius: 10px; font-size: 11px; font-weight: bold; white-space: nowrap; }
-        .chip.active { border-color: var(--gold); color: var(--gold); background: rgba(212,175,55,0.1); }
-        .chip.live { border-left: 4px solid var(--gold); }
-
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .item-card { background: var(--card); border: 1px solid #222; padding: 12px; border-radius: 15px; text-align: center; }
-        .item-card b { display: block; font-size: 13px; margin-bottom: 10px; height: 32px; overflow: hidden; }
-        
-        .qty-box { display: flex; align-items: center; justify-content: center; gap: 10px; background: #000; border-radius: 8px; border: 1px solid #222; padding: 4px; }
-        .q-btn { width: 32px; height: 32px; border: none; border-radius: 5px; background: #1a1a1a; color: var(--gold); font-size: 20px; font-weight: 900; }
-
-        #folio-view { background: #fff; color: #000; padding: 20px; border-radius: 2px; font-family: 'Courier New', Courier, monospace; }
-        .f-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #ccc; font-size: 13px; align-items: center; }
-        .void-btn { color: var(--red); font-weight: bold; padding: 0 10px; font-size: 18px; }
-        .f-total { font-size: 24px; font-weight: 900; display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 15px; margin-top: 15px; }
-
-        .admin-card { background: #111; padding: 20px; border-radius: 15px; border-left: 5px solid var(--gold); margin-bottom: 15px; }
-        .stat-val { font-size: 34px; font-weight: 900; color: var(--gold); margin: 5px 0; }
-        input, select { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; margin-bottom: 10px; font-size: 14px; box-sizing: border-box; }
-
-        .footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 12px; border-top: 1px solid #222; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; box-sizing: border-box; }
-        .cmd-btn { padding: 15px 2px; border-radius: 10px; border: none; font-weight: 900; font-size: 9px; text-transform: uppercase; color: #fff; }
+        /* Modal Transitions */
+        .modal { transition: opacity 0.3s ease; opacity: 0; pointer-events: none; }
+        .modal.open { opacity: 1; pointer-events: auto; }
     </style>
 </head>
-<body>
+<body class="h-screen flex flex-col md:flex-row overflow-hidden relative">
 
-<header>
-    <h1>HOTEL MUSKAN</h1>
-</header>
-
-<div class="tabs no-print">
-    <div class="tab active" onclick="nav('pos', this)">Order</div>
-    <div class="tab" onclick="nav('folio', this)">Bill</div>
-    <div class="tab" onclick="unlockAdmin()">Hisaab 🔒</div>
-</div>
-
-<div id="pos" class="page active">
-    <div class="scroller" id="t-scroll"></div>
-    <div class="scroller" id="c-scroll"></div>
-    <div class="menu-grid" id="m-list"></div>
-</div>
-
-<div id="folio" class="page">
-    <input type="tel" id="c-phone" placeholder="WhatsApp Number">
-    <div style="display: flex; gap: 8px;">
-        <input type="number" id="c-discount" placeholder="Discount (₹)" oninput="renderBill()">
-        <button onclick="addPacking()" style="background:var(--blue); color:#fff; border:none; border-radius:10px; padding:0 15px; font-weight:bold; margin-bottom:10px; font-size:10px;">+Packing</button>
-    </div>
-    
-    <div id="folio-view">
-        <div style="text-align: center; border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 10px;">
-            <h3 style="margin: 0;">HOTEL MUSKAN</h3>
-            <small id="inv-meta" style="font-size: 11px;"></small>
+    <!-- Left Side: Menu Selection -->
+    <div class="w-full md:w-3/5 flex flex-col h-full border-r border-neutral-800">
+        <!-- Header -->
+        <div class="p-4 border-b border-neutral-800 bg-[#0F0F0F] flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold gold-text uppercase tracking-widest">Hotel Muskan</h1>
+                <p class="text-xs text-neutral-500">Billing Counter (POS)</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleDashboard()" class="text-xs bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-3 py-1.5 rounded border border-neutral-700 transition-colors">
+                    <i class="fa-solid fa-chart-line mr-1"></i> Dashboard
+                </button>
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Search item..." 
+                        class="bg-neutral-800 border border-neutral-700 rounded-full py-1 px-4 text-sm focus:outline-none focus:border-[#D4AF37] w-48 lg:w-64">
+                    <i class="fa-solid fa-search absolute right-3 top-2 text-neutral-500 text-xs"></i>
+                </div>
+            </div>
         </div>
-        <div id="inv-items"></div>
-        <div id="disc-line" style="color:var(--red); font-size:12px; font-weight:bold; display:none; text-align:right;"></div>
-        <div class="f-total"><span>TOTAL</span><span id="g-total-val">₹0</span></div>
-        <div id="qr-folio" style="display:flex; justify-content:center; margin-top:15px;"></div>
-    </div>
-</div>
 
-<div id="admin" class="page">
-    <div class="admin-card">
-        <small>AAJ KA PROFIT (NET)</small>
-        <div class="stat-val" id="st-profit">₹0</div>
-        <div style="display: flex; justify-content: space-between; font-size: 12px;">
-            <span style="color:var(--green)">Sales: <b id="st-rev">₹0</b></span>
-            <span style="color:var(--red)">Kharcha: <b id="st-exp">₹0</b></span>
+        <!-- Categories -->
+        <div class="flex overflow-x-auto p-2 bg-[#141414] border-b border-neutral-800 space-x-2 no-scrollbar" id="category-container">
+            <button onclick="filterCategory('All')" class="px-4 py-1 text-xs rounded-full bg-[#D4AF37] text-black font-semibold transition-colors">All</button>
+            <button onclick="filterCategory('Paneer')" class="px-4 py-1 text-xs rounded-full bg-neutral-800 hover:bg-neutral-700 transition-colors">Paneer</button>
+            <button onclick="filterCategory('Non-Veg')" class="px-4 py-1 text-xs rounded-full bg-neutral-800 hover:bg-neutral-700 transition-colors">Non-Veg</button>
+            <button onclick="filterCategory('Rice')" class="px-4 py-1 text-xs rounded-full bg-neutral-800 hover:bg-neutral-700 transition-colors">Rice</button>
+            <button onclick="filterCategory('Breads')" class="px-4 py-1 text-xs rounded-full bg-neutral-800 hover:bg-neutral-700 transition-colors">Breads</button>
+            <button onclick="filterCategory('Extras')" class="px-4 py-1 text-xs rounded-full bg-neutral-800 hover:bg-neutral-700 transition-colors">Extras</button>
+        </div>
+
+        <!-- Menu Grid -->
+        <div class="flex-grow overflow-y-auto p-4 bg-[#1a1a1a]">
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3" id="menu-grid">
+                <!-- Items injected by JS -->
+            </div>
         </div>
     </div>
 
-    <div class="admin-card" style="border-left-color: var(--blue);">
-        <h4 style="margin:0 0 10px 0;">Record Daily Expense</h4>
-        <input type="text" id="exp-name" placeholder="Expense Reason (Milk, Sabzi, Gas)">
-        <input type="number" id="exp-amt" placeholder="Amount (₹)">
-        <button onclick="addExpense()" style="width:100%; padding:12px; background:var(--blue); color:#fff; border:none; border-radius:10px; font-weight:bold;">Save Kharcha</button>
+    <!-- Right Side: Current Bill -->
+    <div class="w-full md:w-2/5 flex flex-col h-full bg-[#0F0F0F]">
+        <!-- Bill Header -->
+        <div class="p-4 border-b border-neutral-800 flex justify-between items-center">
+            <h2 class="font-semibold text-lg">Current Order</h2>
+            <div class="text-xs text-neutral-500" id="current-date"></div>
+        </div>
+
+        <!-- Order Items Table -->
+        <div class="flex-grow overflow-y-auto p-2">
+            <table class="w-full text-left text-sm">
+                <thead class="text-neutral-500 text-xs border-b border-neutral-800">
+                    <tr>
+                        <th class="pb-2 pl-2">Item</th>
+                        <th class="pb-2 text-center w-16">Qty</th>
+                        <th class="pb-2 text-right">Price</th>
+                        <th class="pb-2 text-right w-12">Total</th>
+                        <th class="pb-2 w-8"></th>
+                    </tr>
+                </thead>
+                <tbody id="bill-items-container">
+                    <!-- Bill items injected here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Customer Details -->
+        <div class="px-4 py-3 border-t border-neutral-800 bg-[#141414] grid grid-cols-2 gap-2">
+             <input type="text" id="customer-name" placeholder="Customer Name" class="col-span-2 bg-neutral-800 border border-neutral-700 rounded p-1.5 text-sm focus:border-[#D4AF37] outline-none">
+             <input type="text" id="customer-phone" placeholder="Phone Number (for WhatsApp)" class="bg-neutral-800 border border-neutral-700 rounded p-1.5 text-sm focus:border-[#D4AF37] outline-none">
+             <input type="text" id="table-no" placeholder="Table No." class="bg-neutral-800 border border-neutral-700 rounded p-1.5 text-sm focus:border-[#D4AF37] outline-none">
+             <select id="payment-mode" class="col-span-2 bg-neutral-800 border border-neutral-700 rounded p-1.5 text-sm text-gray-400 focus:border-[#D4AF37] outline-none">
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI / Online</option>
+                <option value="Card">Card</option>
+             </select>
+        </div>
+
+        <!-- Totals Section -->
+        <div class="p-4 bg-[#1a1a1a] border-t border-neutral-800">
+            <div class="flex justify-between mb-1 text-sm text-neutral-400">
+                <span>Subtotal</span>
+                <span id="subtotal-display">₹ 0.00</span>
+            </div>
+            
+            <!-- Discount Feature -->
+            <div class="flex justify-between items-center mb-1 text-sm text-neutral-400">
+                <span>Discount (%)</span>
+                <input type="number" id="discount-input" value="0" min="0" max="100" class="w-16 bg-neutral-800 border border-neutral-700 rounded text-right px-1 text-xs focus:border-[#D4AF37] outline-none text-[#D4AF37]" oninput="renderBill()">
+            </div>
+            <div class="flex justify-between mb-1 text-sm text-neutral-400">
+                <span>Discount Amt</span>
+                <span id="discount-amt-display" class="text-red-400">- ₹ 0.00</span>
+            </div>
+
+            <!-- GST Toggle -->
+            <div class="flex justify-between items-center mb-1 text-sm text-neutral-400">
+                <span>Apply GST (5%)</span>
+                <input type="checkbox" id="gst-toggle" checked onchange="renderBill()" class="accent-[#D4AF37] w-4 h-4 cursor-pointer">
+            </div>
+
+            <div class="flex justify-between mb-1 text-sm text-neutral-400">
+                <span>CGST (2.5%)</span>
+                <span id="cgst-display">₹ 0.00</span>
+            </div>
+            <div class="flex justify-between mb-3 text-sm text-neutral-400">
+                <span>SGST (2.5%)</span>
+                <span id="sgst-display">₹ 0.00</span>
+            </div>
+            <div class="flex justify-between mb-4 text-xl font-bold text-[#D4AF37] border-t border-dashed border-neutral-700 pt-2">
+                <span>Total</span>
+                <span id="total-display">₹ 0.00</span>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2">
+                <button onclick="clearBill()" class="py-3 rounded bg-red-900/30 text-red-500 border border-red-900 hover:bg-red-900/50 text-xs font-semibold transition-colors flex flex-col items-center justify-center" title="Clear All">
+                    <i class="fa-solid fa-trash mb-1"></i>Clear
+                </button>
+                <button onclick="showQRModal()" class="py-3 rounded bg-blue-600 text-white hover:bg-blue-700 text-xs font-semibold transition-colors flex flex-col items-center justify-center" title="Pay via QR Code">
+                    <i class="fa-solid fa-qrcode mb-1 text-base"></i>Pay QR
+                </button>
+                <button onclick="sendWhatsApp()" class="py-3 rounded bg-green-600 text-white hover:bg-green-700 text-xs font-semibold transition-colors flex flex-col items-center justify-center" title="Send via WhatsApp">
+                    <i class="fa-brands fa-whatsapp mb-1 text-base"></i>WhatsApp
+                </button>
+                <button onclick="generateReceipt()" class="py-3 rounded bg-[#D4AF37] text-black font-bold hover:bg-[#b38728] transition-colors text-xs flex flex-col items-center justify-center" title="Print Bill">
+                    <i class="fa-solid fa-print mb-1 text-base"></i>Print
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="admin-card" style="border-left-color: #333;">
-        <h4 style="margin:0 0 10px 0;">Recent Orders</h4>
-        <div id="history-list"></div>
+    <!-- QR Code Modal -->
+    <div id="qr-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div class="bg-[#1a1a1a] border border-[#D4AF37] rounded-lg p-6 w-80 text-center shadow-2xl">
+            <h3 class="text-[#D4AF37] text-lg font-bold mb-2">Scan to Pay</h3>
+            <p class="text-neutral-400 text-xs mb-4">UPI: ajaykumar2569563@ybl</p>
+            
+            <div class="bg-white p-2 rounded-lg inline-block mb-4">
+                <img id="qr-image" src="" alt="QR Code" class="w-48 h-48 object-contain">
+            </div>
+            
+            <div class="text-2xl font-bold text-white mb-6" id="qr-amount">₹ 0.00</div>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeQRModal()" class="px-4 py-2 rounded bg-neutral-700 text-white text-sm hover:bg-neutral-600">Cancel</button>
+                <button onclick="recordSale('UPI'); closeQRModal()" class="px-4 py-2 rounded bg-green-600 text-white text-sm hover:bg-green-700">Payment Received</button>
+            </div>
+        </div>
     </div>
-    <button onclick="resetApp()" style="width:100%; color:var(--red); border:none; background:transparent; font-size:11px; padding:20px;">RESET DATABASE</button>
-</div>
 
-<div class="footer no-print">
-    <button class="cmd-btn" style="background:#222;" onclick="window.print()">Print</button>
-    <button class="cmd-btn" style="background:var(--blue);" onclick="sendKOT()">Kitchen</button>
-    <button class="cmd-btn" style="background:var(--green);" onclick="transmit()">WhatsApp</button>
-    <button class="cmd-btn" style="background:var(--gold); color:#000;" onclick="settle()">Settle</button>
-</div>
+    <!-- Dashboard Modal -->
+    <div id="dashboard-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
+        <div class="bg-[#1a1a1a] border border-neutral-700 rounded-lg w-full max-w-4xl h-[90vh] flex flex-col shadow-2xl m-4">
+            <div class="p-4 border-b border-neutral-700 flex justify-between items-center bg-[#141414]">
+                <h2 class="text-[#D4AF37] text-xl font-bold"><i class="fa-solid fa-chart-pie mr-2"></i>Sales Dashboard</h2>
+                <button onclick="toggleDashboard()" class="text-neutral-400 hover:text-white"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-grow">
+                <!-- Stat Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-neutral-800 p-4 rounded border border-neutral-700">
+                        <p class="text-neutral-400 text-xs uppercase tracking-wider">Total Sales</p>
+                        <p class="text-2xl font-bold text-white mt-1" id="dash-total">₹ 0</p>
+                    </div>
+                    <div class="bg-neutral-800 p-4 rounded border border-neutral-700">
+                        <p class="text-neutral-400 text-xs uppercase tracking-wider">Orders Today</p>
+                        <p class="text-2xl font-bold text-blue-400 mt-1" id="dash-count">0</p>
+                    </div>
+                    <div class="bg-neutral-800 p-4 rounded border border-neutral-700">
+                        <p class="text-neutral-400 text-xs uppercase tracking-wider">Cash</p>
+                        <p class="text-2xl font-bold text-green-400 mt-1" id="dash-cash">₹ 0</p>
+                    </div>
+                    <div class="bg-neutral-800 p-4 rounded border border-neutral-700">
+                        <p class="text-neutral-400 text-xs uppercase tracking-wider">UPI / Online</p>
+                        <p class="text-2xl font-bold text-purple-400 mt-1" id="dash-online">₹ 0</p>
+                    </div>
+                </div>
 
-<script>
-    const upiID = "ajaykumar2569563@ybl";
-    const adminPass = "123";
-    let curT = 1;
-    let tables = {1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, "Parcel":{}};
-    let db = JSON.parse(localStorage.getItem('muskan_pro_v10')) || { rev: 0, exp: 0, history: [] };
+                <!-- Recent Orders -->
+                <h3 class="text-white font-bold mb-4 border-b border-neutral-800 pb-2">Recent Orders</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-neutral-300">
+                        <thead class="text-xs text-neutral-500 uppercase bg-neutral-800">
+                            <tr>
+                                <th class="px-4 py-3">Time</th>
+                                <th class="px-4 py-3">Table</th>
+                                <th class="px-4 py-3">Mode</th>
+                                <th class="px-4 py-3 text-right">Amount</th>
+                                <th class="px-4 py-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dash-history">
+                            <!-- Injected JS -->
+                            <tr><td colspan="5" class="text-center py-4 text-neutral-600">No orders yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    const menu = {
-        "🥘 Paneer & Veg": [
-            {n:"Paneer Do Pyaza", p:240, h:120}, {n:"Paneer Butter", p:260, h:130},
-            {n:"Shahi Paneer", p:260, h:130}, {n:"Dal Tadka", p:140, h:70},
-            {n:"Mix Veg", p:160, h:80}, {n:"Mattar Panner", p:160, h:80},{n:"Palak Panner", p:180, h:90}
-        ],
-        "🍗 Non-Veg": [
-            {n:"Chicken Do Pyaza", p:260, h:130}, {n:"Chicken Curry", p:180, h:90},
-            {n:"Chicken Butter", p:240, h:120}, {n:"Fish Curry", p:200, h:100},
-            {n:"Egg Curry", p:120, h:60}, {n:"Omlate Curry", p:140, h:70}
-        ],
-        "🍚 Rice": [
-            {n:"Plain Rice", p:70, h:40}, {n:"Jeera Rice", p:80, h:40}
-        ],
-        "🫓 Breads": [
-            {n:"Plain Roti", p:6}, {n:"Butter Roti", p:12}
-        ],
-        "🥤 Starters/Extras": [
-            {n:"Chicken Chilli", p:240, h:120}, {n:"Mineral Water", p:20},
-            {n:"Tea", p:10}, {n:"Cold Drink", p:40}
-        ]
-    };
+    <!-- Hidden Receipt Template -->
+    <div id="receipt-area" class="hidden bg-white text-black p-4 max-w-[80mm] mx-auto font-mono text-sm">
+        <div class="text-center mb-4">
+            <h2 class="text-xl font-bold uppercase">Hotel Muskan</h2>
+            <p class="text-xs">BHAGWANPUR, Bihar</p>
+            <p class="text-xs">Phone: +91 96086 35670</p>
+        </div>
+        <div class="border-b border-black pb-2 mb-2 text-xs flex justify-between">
+            <span id="print-date"></span>
+            <span id="print-time"></span>
+        </div>
+        <div class="mb-2 text-xs grid grid-cols-2 gap-1">
+            <p>Name: <span id="print-name">Guest</span></p>
+            <p>Phone: <span id="print-phone">-</span></p>
+            <p>Table: <span id="print-table" class="font-bold">-</span></p>
+            <p>Mode: <span id="print-mode">-</span></p>
+        </div>
+        <table class="w-full text-xs mb-4">
+            <thead>
+                <tr class="border-b border-black border-dashed">
+                    <th class="text-left py-1">Item</th>
+                    <th class="text-center py-1">Qty</th>
+                    <th class="text-right py-1">Amt</th>
+                </tr>
+            </thead>
+            <tbody id="print-items">
+                <!-- Items -->
+            </tbody>
+        </table>
+        <div class="flex justify-between text-xs mb-1">
+            <span>Subtotal:</span>
+            <span id="print-subtotal"></span>
+        </div>
+        <div class="flex justify-between text-xs mb-1">
+            <span>Discount:</span>
+            <span id="print-discount"></span>
+        </div>
+        
+        <!-- Print GST Section (Hidden if disabled) -->
+        <div id="print-tax-section">
+            <div class="flex justify-between text-xs mb-1">
+                <span>CGST (2.5%):</span>
+                <span id="print-cgst"></span>
+            </div>
+            <div class="flex justify-between text-xs mb-2 border-b border-black pb-1">
+                <span>SGST (2.5%):</span>
+                <span id="print-sgst"></span>
+            </div>
+        </div>
 
-    const audio = new (window.AudioContext || window.webkitAudioContext)();
-    function pop() { const o = audio.createOscillator(); const g = audio.createGain(); o.frequency.setValueAtTime(600, audio.currentTime); o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime + 0.1); }
+        <div class="flex justify-between font-bold text-sm mb-4">
+            <span>TOTAL:</span>
+            <span id="print-total"></span>
+        </div>
+        
+        <div class="border-t border-black border-dashed pt-2 mb-2 text-[10px] text-center">
+            <p>UPI: <strong>ajaykumar2569563@ybl</strong></p>
+        </div>
 
-    function nav(id, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); 
-        if(el) el.classList.add('active');
-        if(id === 'folio') renderBill();
-        if(id === 'admin') updateAdmin();
-    }
+        <div class="text-center text-[10px] uppercase">
+            <p>Thank you for dining with us!</p>
+            <p>A TASTE YOU'LL REMEMBER</p>
+        </div>
+    </div>
 
-    function unlockAdmin() {
-        const pass = prompt("Enter Admin Password:");
-        if(pass === adminPass) {
-            nav('admin', document.querySelectorAll('.tab')[2]);
-        } else {
-            alert("Wrong Password!");
+    <!-- Hidden KOT Template -->
+    <div id="kot-area" class="hidden bg-white text-black p-4 max-w-[80mm] mx-auto font-mono text-sm">
+        <div class="text-center mb-4 border-b-2 border-black pb-2">
+            <h2 class="text-xl font-bold uppercase">KITCHEN ORDER TICKET</h2>
+        </div>
+        <div class="mb-2 text-sm font-bold">
+            <p>Table: <span id="kot-table" class="text-lg"></span></p>
+            <p>Time: <span id="kot-time"></span></p>
+        </div>
+        <table class="w-full text-sm font-bold border-t border-b border-black my-2">
+            <thead>
+                <tr>
+                    <th class="text-left py-2">Item</th>
+                    <th class="text-center py-2 w-16">Qty</th>
+                </tr>
+            </thead>
+            <tbody id="kot-items">
+                <!-- Items -->
+            </tbody>
+        </table>
+        <div class="mt-8 pt-4 border-t border-dashed border-black">
+             <p class="text-xs">Chef Notes: _____________________</p>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const UPI_ID = "ajaykumar2569563@ybl";
+        const RESTAURANT_NAME = "Hotel Muskan";
+
+        // --- DATA ---
+        const menuItems = [
+            // Paneer Specials
+            { id: 1, name: "Shahi Paneer (Full)", price: 260, category: "Paneer" },
+            { id: 2, name: "Shahi Paneer (Half)", price: 130, category: "Paneer" },
+            { id: 3, name: "Mattar Paneer (Full)", price: 220, category: "Paneer" },
+            { id: 4, name: "Mattar Paneer (Half)", price: 110, category: "Paneer" },
+            { id: 5, name: "Paneer Do Pyaza (Full)", price: 240, category: "Paneer" },
+            { id: 6, name: "Paneer Do Pyaza (Half)", price: 120, category: "Paneer" },
+            { id: 7, name: "Paneer Masala (Full)", price: 240, category: "Paneer" },
+            { id: 8, name: "Paneer Masala (Half)", price: 120, category: "Paneer" },
+            { id: 9, name: "Paneer Chilli (Full)", price: 240, category: "Paneer" },
+            { id: 10, name: "Paneer Chilli (Half)", price: 120, category: "Paneer" },
+            { id: 11, name: "Palak Paneer (Full)", price: 180, category: "Paneer" },
+            { id: 12, name: "Palak Paneer (Half)", price: 90, category: "Paneer" },
+            
+            // Non Veg
+            { id: 13, name: "Chicken Do Pyaza (Full)", price: 260, category: "Non-Veg" },
+            { id: 14, name: "Chicken Do Pyaza (Half)", price: 130, category: "Non-Veg" },
+            { id: 15, name: "Chicken Curry (Full)", price: 180, category: "Non-Veg" },
+            { id: 16, name: "Chicken Curry (Half)", price: 90, category: "Non-Veg" },
+            { id: 17, name: "Fish Curry (Full)", price: 160, category: "Non-Veg" },
+            { id: 18, name: "Fish Curry (Half)", price: 80, category: "Non-Veg" },
+            { id: 19, name: "Egg Curry (Full)", price: 120, category: "Non-Veg" },
+            { id: 20, name: "Egg Curry (Half)", price: 60, category: "Non-Veg" },
+            { id: 21, name: "Omelette Curry (Full)", price: 160, category: "Non-Veg" },
+            { id: 22, name: "Omelette Curry (Half)", price: 80, category: "Non-Veg" },
+
+            // Rice & Biryani
+            { id: 23, name: "Plain Rice (Full)", price: 70, category: "Rice" },
+            { id: 24, name: "Plain Rice (Half)", price: 40, category: "Rice" },
+            { id: 25, name: "Jeera Rice (Full)", price: 80, category: "Rice" },
+            { id: 26, name: "Jeera Rice (Half)", price: 40, category: "Rice" },
+
+            // Breads
+            { id: 27, name: "Plain Roti", price: 6, category: "Breads" },
+            { id: 28, name: "Butter Roti", price: 12, category: "Breads" },
+
+            // Extras
+            { id: 29, name: "Special Tea", price: 10, category: "Extras" },
+            { id: 30, name: "Mineral Water", price: 20, category: "Extras" },
+            { id: 31, name: "Cold Drink", price: 40, category: "Extras" },
+        ];
+
+        let currentBill = [];
+        let salesData = {
+            total: 0,
+            count: 0,
+            cash: 0,
+            online: 0,
+            history: []
+        };
+
+        // --- INIT ---
+        window.onload = function() {
+            renderMenu('All');
+            updateDate();
+            document.getElementById('search-input').addEventListener('input', (e) => searchMenu(e.target.value));
+        };
+
+        function updateDate() {
+            const now = new Date();
+            document.getElementById('current-date').innerText = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
-    }
 
-    function init() {
-        const ts = document.getElementById('t-scroll');
-        for(let i=1; i<=8; i++) ts.innerHTML += `<div class="chip ${i==1?'active':''}" id="tb-${i}" onclick="setT('${i}')">T${i}</div>`;
-        ts.innerHTML += `<div class="chip" id="tb-Parcel" onclick="setT('Parcel')">Parcel</div>`;
-        const cs = document.getElementById('c-scroll');
-        for(let cat in menu) cs.innerHTML += `<div class="chip" onclick="setCat('${cat}', this)">${cat}</div>`;
-        setT(1); setCat("🥘 Paneer & Veg", cs.children[0]);
-    }
+        // --- RENDER MENU ---
+        function renderMenu(category) {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            
+            const items = category === 'All' ? menuItems : menuItems.filter(i => i.category === category);
 
-    function setT(i) {
-        curT = i; document.querySelectorAll('#t-scroll .chip').forEach(c => c.classList.remove('active'));
-        document.getElementById('tb-'+i).classList.add('active'); drawMenu();
-    }
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `p-3 rounded border border-neutral-700 bg-[#252525] hover:border-[#D4AF37] hover:bg-[#2a2a2a] cursor-pointer transition-all flex flex-col justify-between h-24 relative group`;
+                div.onclick = () => addToBill(item);
+                
+                let iconColor = item.category === 'Non-Veg' ? 'text-red-500' : (item.category === 'Extras' ? 'text-blue-400' : 'text-green-500');
+                
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-semibold leading-tight line-clamp-2">${item.name}</span>
+                        <i class="fa-solid fa-circle text-[8px] ${iconColor}"></i>
+                    </div>
+                    <div class="flex justify-between items-end mt-2">
+                        <span class="text-[#D4AF37] font-bold text-sm">₹${item.price}</span>
+                        <span class="text-[10px] text-neutral-500 bg-black px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">ADD +</span>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
 
-    function setCat(cat, el) {
-        document.querySelectorAll('#c-scroll .chip').forEach(c => c.classList.remove('active'));
-        el.classList.add('active'); drawMenu();
-    }
-
-    function drawMenu() {
-        const cat = document.querySelector('#c-scroll .chip.active').innerText;
-        const list = document.getElementById('m-list'); list.innerHTML = '';
-        menu[cat].forEach(item => {
-            const qty = tables[curT][item.n] ? tables[curT][item.n].q : 0;
-            const hqty = tables[curT][item.n+' (H)'] ? tables[curT][item.n+' (H)'].q : 0;
-            let html = `<div class="item-card"><b>${item.n}</b>`;
-            if(item.h) {
-                html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-                    <button class="q-btn" style="font-size:10px" onclick="updQty('${item.n} (H)', ${item.h}, 1)">H:${hqty}</button>
-                    <button class="q-btn" style="font-size:10px" onclick="updQty('${item.n}', ${item.p}, 1)">F:${qty}</button>
-                </div>`;
-            } else {
-                html += `<div class="qty-box">
-                    <button class="q-btn" onclick="updQty('${item.n}', ${item.p}, -1)">-</button>
-                    <span style="font-weight:900;">${qty}</span>
-                    <button class="q-btn" onclick="updQty('${item.n}', ${item.p}, 1)">+</button>
-                </div>`;
+            // Update active category button
+            const buttons = document.getElementById('category-container').getElementsByTagName('button');
+            for(let btn of buttons) {
+                if(btn.innerText === category) {
+                    btn.className = "px-4 py-1 text-xs rounded-full bg-[#D4AF37] text-black font-semibold transition-colors";
+                } else {
+                    btn.className = "px-4 py-1 text-xs rounded-full bg-neutral-800 hover:bg-neutral-700 transition-colors";
+                }
             }
-            list.innerHTML += html + `</div>`;
-        });
-    }
-
-    function updQty(n, p, d) {
-        if(!tables[curT][n]) tables[curT][n] = {q:0, p:p};
-        tables[curT][n].q += d;
-        if(tables[curT][n].q <= 0) delete tables[curT][n];
-        document.getElementById('tb-'+curT).classList.toggle('live', Object.keys(tables[curT]).length > 0);
-        pop(); drawMenu();
-    }
-
-    function voidItem(n) { delete tables[curT][n]; if(Object.keys(tables[curT]).length === 0) document.getElementById('tb-'+curT).classList.remove('live'); pop(); renderBill(); }
-
-    function addPacking() { updQty('Packing Charges', 10, 1); }
-
-    function getBill() {
-        let subtotal = 0, txt = `*HOTEL MUSKAN BILL*%0A------------------%0A`;
-        let rows = '';
-        const disc = parseInt(document.getElementById('c-discount').value) || 0;
-        for(let n in tables[curT]) {
-            let i = tables[curT][n]; let line = i.q * i.p; subtotal += line;
-            rows += `<div class="f-row"><span>${i.q}x ${n}</span><span>₹${line} <span class="no-print void-btn" onclick="voidItem('${n}')">×</span></span></div>`;
-            txt += `${i.q}x ${n} = ₹${line}%0A`;
         }
-        const total = Math.max(0, subtotal - disc);
-        if(disc > 0) txt += `Discount: -₹${disc}%0A`;
-        txt += `------------------%0A*TOTAL: ₹${total}*%0A%0A*Pay UPI:* upi://pay?pa=${upiID}%26am=${total}%26cu=INR`;
-        return { total, txt, rows, disc };
-    }
 
-    function renderBill() {
-        const data = getBill();
-        document.getElementById('inv-items').innerHTML = data.rows;
-        document.getElementById('g-total-val').innerText = '₹' + data.total;
-        document.getElementById('inv-meta').innerText = `ID: ${curT} | ${new Date().toLocaleTimeString()}`;
-        document.getElementById('disc-line').innerText = data.disc > 0 ? `-₹${data.disc} Discount Applied` : "";
-        document.getElementById('disc-line').style.display = data.disc > 0 ? "block" : "none";
-        const qr = document.getElementById('qr-folio'); qr.innerHTML = "";
-        if(data.total > 0) new QRCode(qr, {text: `upi://pay?pa=${upiID}&am=${data.total}&cu=INR`, width: 130, height: 130});
-    }
+        function filterCategory(cat) {
+            renderMenu(cat);
+        }
 
-    function transmit() { const ph = document.getElementById('c-phone').value; const data = getBill(); if(data.total === 0) return; window.open(`https://wa.me/${ph ? '91'+ph : ''}?text=${data.txt}`); }
+        function searchMenu(query) {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            const items = menuItems.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
+            
+            if(items.length === 0) {
+                grid.innerHTML = '<div class="col-span-3 text-center text-neutral-500 text-sm py-4">No items found</div>';
+                return;
+            }
 
-    function sendKOT() { let kot = `*KITCHEN ORDER (T-${curT})*%0A------------------%0A`; for(let n in tables[curT]) kot += `• ${tables[curT][n].q} x ${n}%0A`; window.open(`https://wa.me/?text=${kot}`); }
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `p-3 rounded border border-neutral-700 bg-[#252525] hover:border-[#D4AF37] hover:bg-[#2a2a2a] cursor-pointer transition-all flex flex-col justify-between h-24 relative group`;
+                div.onclick = () => addToBill(item);
+                let iconColor = item.category === 'Non-Veg' ? 'text-red-500' : 'text-green-500';
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-semibold leading-tight line-clamp-2">${item.name}</span>
+                        <i class="fa-solid fa-circle text-[8px] ${iconColor}"></i>
+                    </div>
+                    <div class="flex justify-between items-end mt-2">
+                        <span class="text-[#D4AF37] font-bold text-sm">₹${item.price}</span>
+                        <span class="text-[10px] text-neutral-500 bg-black px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">ADD +</span>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
 
-    function settle() {
-        const t = parseInt(document.getElementById('g-total-val').innerText.replace('₹',''));
-        if(t === 0) return;
-        db.rev += t; db.history.unshift({ time: new Date().toLocaleTimeString(), amt: t, t: curT });
-        db.history = db.history.slice(0, 5);
-        localStorage.setItem('muskan_pro_v10', JSON.stringify(db));
-        tables[curT] = {}; document.getElementById('tb-'+curT).classList.remove('live');
-        document.getElementById('c-discount').value = '';
-        alert("Settled!"); nav('admin'); nav('pos', document.querySelectorAll('.tab')[0]);
-    }
+        // --- BILL LOGIC ---
+        function addToBill(item) {
+            const existing = currentBill.find(i => i.id === item.id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                currentBill.push({ ...item, qty: 1 });
+            }
+            renderBill();
+        }
 
-    function addExpense() {
-        const amt = parseInt(document.getElementById('exp-amt').value);
-        if(!amt) return;
-        db.exp += amt; localStorage.setItem('muskan_pro_v10', JSON.stringify(db));
-        document.getElementById('exp-name').value = ''; document.getElementById('exp-amt').value = '';
-        updateAdmin();
-    }
+        function updateQty(id, change) {
+            const item = currentBill.find(i => i.id === id);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) {
+                    currentBill = currentBill.filter(i => i.id !== id);
+                }
+            }
+            renderBill();
+        }
 
-    function updateAdmin() {
-        document.getElementById('st-rev').innerText = '₹' + db.rev;
-        document.getElementById('st-exp').innerText = '₹' + db.exp;
-        document.getElementById('st-profit').innerText = '₹' + (db.rev - db.exp);
-        const list = document.getElementById('history-list'); list.innerHTML = '';
-        db.history.forEach(h => list.innerHTML += `<div class="f-row" style="color:#888; border-bottom:1px solid #222"><span>T-${h.t} @ ${h.time}</span><b>₹${h.amt}</b></div>`);
-    }
+        function removeItem(id) {
+            currentBill = currentBill.filter(i => i.id !== id);
+            renderBill();
+        }
 
-    function resetApp() { if(confirm("Erase all data?")) { localStorage.clear(); location.reload(); } }
+        function calculateBillTotal() {
+            let subtotal = 0;
+            currentBill.forEach(item => subtotal += item.price * item.qty);
 
-    init();
-</script>
+            const discountPercent = parseFloat(document.getElementById('discount-input').value) || 0;
+            const discountAmt = (subtotal * discountPercent) / 100;
+            const discountedSubtotal = subtotal - discountAmt;
+
+            const gstEnabled = document.getElementById('gst-toggle').checked;
+            let cgst = 0, sgst = 0;
+
+            if (gstEnabled) {
+                cgst = discountedSubtotal * 0.025;
+                sgst = discountedSubtotal * 0.025;
+            }
+            
+            return {
+                subtotal,
+                discountAmt,
+                discountedSubtotal,
+                cgst,
+                sgst,
+                total: discountedSubtotal + cgst + sgst
+            };
+        }
+
+        function renderBill() {
+            const container = document.getElementById('bill-items-container');
+            container.innerHTML = '';
+            
+            const totals = calculateBillTotal();
+
+            currentBill.forEach(item => {
+                const total = item.price * item.qty;
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-neutral-800 hover:bg-neutral-800/50";
+                tr.innerHTML = `
+                    <td class="py-2 pl-2 font-medium text-neutral-300 truncate max-w-[120px]">${item.name}</td>
+                    <td class="py-2 text-center">
+                        <div class="flex items-center justify-center bg-neutral-900 rounded border border-neutral-700 w-16 mx-auto">
+                            <button onclick="updateQty(${item.id}, -1)" class="px-2 text-neutral-400 hover:text-white">-</button>
+                            <span class="text-xs w-6 text-center">${item.qty}</span>
+                            <button onclick="updateQty(${item.id}, 1)" class="px-2 text-neutral-400 hover:text-white">+</button>
+                        </div>
+                    </td>
+                    <td class="py-2 text-right text-neutral-400">₹${item.price}</td>
+                    <td class="py-2 text-right font-medium">₹${total}</td>
+                    <td class="py-2 text-center">
+                        <button onclick="removeItem(${item.id})" class="text-red-500/50 hover:text-red-500"><i class="fa-solid fa-times"></i></button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+
+            document.getElementById('subtotal-display').innerText = `₹ ${totals.subtotal.toFixed(2)}`;
+            document.getElementById('discount-amt-display').innerText = `- ₹ ${totals.discountAmt.toFixed(2)}`;
+            document.getElementById('cgst-display').innerText = `₹ ${totals.cgst.toFixed(2)}`;
+            document.getElementById('sgst-display').innerText = `₹ ${totals.sgst.toFixed(2)}`;
+            document.getElementById('total-display').innerText = `₹ ${totals.total.toFixed(2)}`;
+            
+            // Visual feedback for disabled GST
+            const gstEnabled = document.getElementById('gst-toggle').checked;
+            const taxLabels = [document.getElementById('cgst-display').parentElement, document.getElementById('sgst-display').parentElement];
+            taxLabels.forEach(el => {
+                if(!gstEnabled) el.classList.add('opacity-30', 'line-through');
+                else el.classList.remove('opacity-30', 'line-through');
+            });
+        }
+
+        function clearBill() {
+            if(confirm("Clear current order?")) {
+                currentBill = [];
+                document.getElementById('customer-name').value = '';
+                document.getElementById('customer-phone').value = '';
+                document.getElementById('table-no').value = '';
+                document.getElementById('discount-input').value = '0';
+                renderBill();
+            }
+        }
+
+        // --- DASHBOARD & SALES LOGIC ---
+        
+        function recordSale(modeOverride = null) {
+            if (currentBill.length === 0) return;
+            
+            const totals = calculateBillTotal();
+            const mode = modeOverride || document.getElementById('payment-mode').value;
+            const table = document.getElementById('table-no').value || "N/A";
+
+            // Update Stats
+            salesData.total += totals.total;
+            salesData.count += 1;
+            if(mode === 'Cash') salesData.cash += totals.total;
+            else salesData.online += totals.total;
+
+            // Add to History
+            const orderRecord = {
+                time: new Date().toLocaleTimeString(),
+                table: table,
+                mode: mode,
+                amount: totals.total,
+                items: [...currentBill] // Copy
+            };
+            salesData.history.unshift(orderRecord);
+            if(salesData.history.length > 10) salesData.history.pop();
+
+            updateDashboardUI();
+        }
+
+        function updateDashboardUI() {
+            document.getElementById('dash-total').innerText = `₹ ${salesData.total.toFixed(2)}`;
+            document.getElementById('dash-count').innerText = salesData.count;
+            document.getElementById('dash-cash').innerText = `₹ ${salesData.cash.toFixed(2)}`;
+            document.getElementById('dash-online').innerText = `₹ ${salesData.online.toFixed(2)}`;
+
+            const tbody = document.getElementById('dash-history');
+            tbody.innerHTML = '';
+            
+            if(salesData.history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-neutral-600">No orders yet.</td></tr>';
+                return;
+            }
+
+            salesData.history.forEach(order => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-neutral-700 hover:bg-neutral-800";
+                tr.innerHTML = `
+                    <td class="px-4 py-3">${order.time}</td>
+                    <td class="px-4 py-3 font-semibold text-[#D4AF37]">${order.table}</td>
+                    <td class="px-4 py-3">${order.mode}</td>
+                    <td class="px-4 py-3 text-right">₹ ${order.amount.toFixed(2)}</td>
+                    <td class="px-4 py-3 text-center">
+                        <button class="text-xs text-blue-400 hover:text-white" title="Reprint functionality coming soon">View</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleDashboard() {
+            const modal = document.getElementById('dashboard-modal');
+            modal.classList.toggle('open');
+        }
+
+        // --- QR CODE LOGIC ---
+        function showQRModal() {
+            if (currentBill.length === 0) {
+                alert("Order is empty!");
+                return;
+            }
+            const totals = calculateBillTotal();
+            const amount = totals.total.toFixed(2);
+            
+            // Format: upi://pay?pa={id}&pn={name}&am={amount}&cu=INR
+            const upiString = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(RESTAURANT_NAME)}&am=${amount}&cu=INR`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+            
+            document.getElementById('qr-image').src = qrUrl;
+            document.getElementById('qr-amount').innerText = `₹ ${amount}`;
+            
+            const modal = document.getElementById('qr-modal');
+            modal.classList.add('open');
+        }
+
+        function closeQRModal() {
+            document.getElementById('qr-modal').classList.remove('open');
+        }
+
+
+        // --- PRINTING & EXPORT ---
+        function printDiv(divId) {
+            const target = document.getElementById(divId);
+            document.querySelectorAll('.print-area').forEach(el => el.classList.remove('print-area'));
+            target.classList.add('print-area');
+            window.print();
+            target.classList.remove('print-area');
+        }
+
+        function generateReceipt() {
+            if (currentBill.length === 0) {
+                alert("Order is empty!");
+                return;
+            }
+
+            // Record sale automatically on print
+            recordSale();
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString();
+            const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Fill Receipt Data
+            document.getElementById('print-date').innerText = dateStr;
+            document.getElementById('print-time').innerText = timeStr;
+            document.getElementById('print-name').innerText = document.getElementById('customer-name').value || "Guest";
+            document.getElementById('print-phone').innerText = document.getElementById('customer-phone').value || "-";
+            document.getElementById('print-table').innerText = document.getElementById('table-no').value || "N/A";
+            document.getElementById('print-mode').innerText = document.getElementById('payment-mode').value;
+
+            const tbody = document.getElementById('print-items');
+            tbody.innerHTML = '';
+            
+            const totals = calculateBillTotal();
+            
+            currentBill.forEach(item => {
+                const total = item.price * item.qty;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-left py-1">${item.name}</td>
+                    <td class="text-center py-1">${item.qty}</td>
+                    <td class="text-right py-1">${total}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Show/Hide Tax Section on Print
+            const gstEnabled = document.getElementById('gst-toggle').checked;
+            document.getElementById('print-tax-section').style.display = gstEnabled ? 'block' : 'none';
+
+            document.getElementById('print-subtotal').innerText = totals.subtotal.toFixed(2);
+            document.getElementById('print-discount').innerText = "- " + totals.discountAmt.toFixed(2);
+            document.getElementById('print-cgst').innerText = totals.cgst.toFixed(2);
+            document.getElementById('print-sgst').innerText = totals.sgst.toFixed(2);
+            document.getElementById('print-total').innerText = "₹ " + totals.total.toFixed(2);
+
+            printDiv('receipt-area');
+            
+            // Optional: Clear after print
+            // clearBill();
+        }
+
+        function sendWhatsApp() {
+            if (currentBill.length === 0) {
+                alert("Order is empty!");
+                return;
+            }
+
+            const phone = document.getElementById('customer-phone').value;
+            const name = document.getElementById('customer-name').value || "Guest";
+            const table = document.getElementById('table-no').value || "N/A";
+            const date = new Date().toLocaleDateString();
+
+            let msg = `*HOTEL MUSKAN - RECEIPT* %0a`;
+            msg += `Date: ${date} | Table: ${table} %0a`;
+            msg += `Customer: ${name} %0a`;
+            msg += `--------------------------------%0a`;
+
+            currentBill.forEach(item => {
+                msg += `${item.name} x${item.qty} = ₹${item.price * item.qty} %0a`;
+            });
+
+            msg += `--------------------------------%0a`;
+            
+            const totals = calculateBillTotal();
+            
+            msg += `Subtotal: ${totals.subtotal.toFixed(2)} %0a`;
+            if(totals.discountAmt > 0) msg += `Discount: -${totals.discountAmt.toFixed(2)} %0a`;
+            msg += `*Total Amount: ${totals.total.toFixed(2)}* %0a`;
+            msg += `--------------------------------%0a`;
+            msg += `Pay via UPI: ${UPI_ID} %0a`;
+            msg += `Thank you for dining with us!`;
+
+            let url = `https://wa.me/${phone}?text=${msg}`;
+            if (!phone) {
+                url = `https://wa.me/?text=${msg}`;
+            }
+
+            window.open(url, '_blank');
+            recordSale();
+        }
+
+        function generateKOT() {
+            if (currentBill.length === 0) {
+                alert("Order is empty!");
+                return;
+            }
+
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const tableNo = document.getElementById('table-no').value || "N/A";
+
+            document.getElementById('kot-time').innerText = timeStr;
+            document.getElementById('kot-table').innerText = tableNo;
+
+            const tbody = document.getElementById('kot-items');
+            tbody.innerHTML = '';
+
+            currentBill.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-left py-2 border-b border-gray-300">${item.name}</td>
+                    <td class="text-center py-2 border-b border-gray-300 text-lg">${item.qty}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            printDiv('kot-area');
+        }
+
+        // Update time every minute
+        setInterval(updateDate, 60000);
+
+    </script>
 </body>
 </html>
-
