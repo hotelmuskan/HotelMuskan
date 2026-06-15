@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel Muskan - Billing Panel</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- QRCodeJS Library for instant dynamic QR Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         .theme-black { background-color: #0D0D0D; }
@@ -15,7 +13,6 @@
         .border-gold { border-color: #D4AF37; }
         .hover-gold:hover { background-color: #AA8414; color: white; }
 
-        /* Custom Scrollbar for sleek UI styling */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #1A1A1A; }
         ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 3px; }
@@ -36,14 +33,13 @@
 </head>
 <body class="bg-stone-950 text-gray-100 font-sans min-h-screen flex flex-col">
 
-    <!-- Header Frame -->
     <header class="theme-black border-b border-stone-800 shadow-xl no-print">
         <div class="container mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full border-2 border-gold flex items-center justify-center font-bold text-gold tracking-wider">HM</div>
                 <div>
                     <h1 class="text-2xl font-black tracking-widest text-gold">HOTEL MUSKAN</h1>
-                    <p class="text-xs text-stone-400 tracking-wider">PREMIUM MAIN PANEL & DATA MANAGEMENT</p>
+                    <p class="text-xs text-stone-400 tracking-wider">OFFICIAL DIGITAL BILLING PANEL</p>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -52,7 +48,6 @@
         </div>
     </header>
 
-    <!-- Client Config Interface Layout -->
     <section class="container mx-auto px-4 mt-4 no-print">
         <div class="bg-stone-900 border border-stone-800 rounded-xl p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -65,55 +60,60 @@
             </div>
             <div>
                 <label class="block text-xs uppercase tracking-wider text-stone-400 font-semibold mb-1">Merchant UPI ID (PhonePe Destination)</label>
-                <input type="text" id="merchantUpi" value="hotelmuskan@ybl" placeholder="e.g., hotelmuskan@ybl" class="w-full bg-stone-950 border border-stone-800 rounded-lg px-3 py-2 text-sm text-gold font-mono focus:outline-none focus:border-gold">
+                <input type="text" id="merchantUpi" value="hotelmuskan@ybl" class="w-full bg-stone-950 border border-stone-800 rounded-lg px-3 py-2 text-sm text-gold font-mono focus:outline-none focus:border-gold">
             </div>
         </div>
     </section>
 
-    <!-- Main Workspace Container -->
-    <main class="container mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow no-print">
+    <section class="container mx-auto px-4 mt-4 no-print">
+        <div class="bg-stone-900 border border-amber-500/30 rounded-xl p-4">
+            <h3 class="text-xs font-bold text-gold uppercase tracking-wider mb-2 flex items-center gap-2">
+                <span>⚡ Quick Add Custom Item</span>
+                <span class="text-[10px] text-stone-400 font-normal normal-case">(Type any special request or raw pricing straight into current ticket)</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input type="text" id="customItemName" placeholder="Item Name" class="bg-stone-950 border border-stone-800 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-gold">
+                <input type="number" id="customItemPrice" placeholder="Price (₹)" class="bg-stone-950 border border-stone-800 rounded-lg px-3 py-2 text-sm text-gold font-mono focus:outline-none focus:border-gold">
+                <button onclick="addCustomItemToCart()" class="bg-gold text-stone-950 font-bold py-2 px-4 rounded-lg text-sm hover:bg-amber-400 transition duration-150">
+                    + Add Straight to Bill
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-4 py-4 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow no-print">
         
-        <!-- Left Column Block: Categories & Live Items Grid -->
         <section class="lg:col-span-2 space-y-6 flex flex-col">
-            <!-- Navigation Category Scroll Area -->
             <div class="flex gap-2 overflow-x-auto pb-3 border-b border-stone-800 custom-scroll">
                 <button onclick="filterMenu('all')" class="cat-btn px-4 py-2 bg-gold text-stone-950 font-bold rounded-lg shadow-md whitespace-nowrap transition duration-150 text-xs sm:text-sm">All Menu</button>
-                <button onclick="filterMenu('Starters')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Soup & Starters</button>
-                <button onclick="filterMenu('Veg Main')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Paneer & Veg</button>
-                <button onclick="filterMenu('NonVeg Main')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Chicken & Mutton</button>
-                <button onclick="filterMenu('Chinese Fast')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Chinese & Fast Food</button>
-                <button onclick="filterMenu('Roti Rice')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Tandoor & Rice</button>
-                <button onclick="filterMenu('Drinks Dessert')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Beverages & Desserts</button>
+                <button onclick="filterMenu('Veg')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Veg Specialties</button>
+                <button onclick="filterMenu('Non-Veg')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Non-Veg Curries</button>
+                <button onclick="filterMenu('Rice-Breads')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Rice & Meals</button>
+                <button onclick="filterMenu('Drinks-Extras')" class="cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm">Drinks & Extras</button>
             </div>
 
-            <!-- Scrollable Dynamic Menu Deck Grid -->
-            <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[62vh] overflow-y-auto pr-1">
-                <!-- Javascript maps structured dictionary rows here -->
-            </div>
+            <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[52vh] overflow-y-auto pr-1">
+                </div>
         </section>
 
-        <!-- Right Column Block: Operational Order Stream Panel -->
-        <section class="bg-stone-900 border border-stone-800 rounded-xl p-5 flex flex-col justify-between h-[calc(100vh-210px)] sticky top-6">
+        <section class="bg-stone-900 border border-stone-800 rounded-xl p-5 flex flex-col justify-between h-[calc(100vh-270px)] sticky top-6">
             <div class="flex flex-col flex-grow overflow-hidden">
                 <div class="flex justify-between items-center border-b border-stone-800 pb-3 mb-4">
                     <h2 class="text-md font-bold text-gold tracking-wide uppercase">Active Order Stream</h2>
                     <button onclick="clearCart()" class="text-xs text-red-400 hover:text-red-500 hover:underline">Reset Order</button>
                 </div>
 
-                <!-- Live Container Rows -->
                 <div id="cartItems" class="space-y-2.5 overflow-y-auto flex-grow pr-1">
                     <p class="text-stone-500 text-center py-16 text-xs" id="emptyCartMsg">No items selected in active checkout buffer.</p>
                 </div>
             </div>
 
-            <!-- Financial Calculation Layout -->
             <div class="border-t border-stone-800 pt-4 mt-4 space-y-2.5">
                 <div class="flex justify-between text-xs text-stone-400">
                     <span>Base Subtotal</span>
                     <span id="subtotalAmount">₹0.00</span>
                 </div>
                 
-                <!-- GST Switch Checkbox Layer -->
                 <div class="flex justify-between items-center text-xs text-stone-400">
                     <div class="flex items-center gap-2">
                         <span>GST (5% Restaurant Slab)</span>
@@ -127,13 +127,11 @@
                     <span id="grandTotalAmount" class="text-gold">₹0.00</span>
                 </div>
 
-                <!-- PhonePe Static/Dynamic UPI UI Component Frame -->
                 <div id="qrWrapper" class="bg-white p-2 rounded-lg flex flex-col items-center justify-center hidden mx-auto transition duration-200 shadow-inner my-1 w-32">
                     <div id="phonepeQrCode"></div>
                     <p class="text-[8px] font-bold text-stone-900 mt-1 uppercase tracking-tighter">Scan to Pay via PhonePe</p>
                 </div>
 
-                <!-- Command Processing Pipeline Matrix -->
                 <div class="grid grid-cols-2 gap-2 pt-1">
                     <button onclick="generateReceipt()" class="bg-stone-800 hover:bg-stone-700 border border-stone-700 text-gold font-bold py-2 px-3 rounded-lg text-xs transition duration-100 shadow-md">
                         Print Invoice
@@ -146,7 +144,6 @@
         </section>
     </main>
 
-    <!-- Hidden Layout Layer (Thermal POS Print Engine Mapping Frame) -->
     <div id="receiptPrintArea" class="hidden bg-white text-black p-5 max-w-xs mx-auto font-mono text-xs shadow-lg">
         <div class="text-center space-y-1 border-b border-dashed border-gray-400 pb-2">
             <h2 class="text-lg font-black tracking-widest">HOTEL MUSKAN</h2>
@@ -167,8 +164,7 @@
                 </tr>
             </thead>
             <tbody id="receiptRows">
-                <!-- Injected via Script Loop Matrix -->
-            </tbody>
+                </tbody>
         </table>
 
         <div class="space-y-0.5 text-right text-[10px] font-semibold">
@@ -181,85 +177,57 @@
 
         <div class="text-center mt-5 pt-2 border-t border-dashed border-gray-400">
             <p class="font-bold tracking-wider text-[10px]">THANK YOU! VISIT AGAIN</p>
-            <p class="text-[8px] text-gray-500 font-sans">Hotel Muskan Billing ERP v2.0</p>
+            <p class="text-[8px] text-gray-500 font-sans">Hotel Muskan Billing System</p>
         </div>
     </div>
 
-    <!-- Core Automation Scripts -->
     <script>
-        // Comprehensive Structured Menu Database (55+ Verified High-Demand Items)
+        // Exact dataset provided by customer mapped with individual variant IDs
         const menuItems = [
-            // 1. Soup & Starters
-            { id: 1, name: 'Veg Manchow Soup', price: 90, category: 'Starters' },
-            { id: 2, name: 'Tomato Soup Premium', price: 80, category: 'Starters' },
-            { id: 3, name: 'Paneer Chilli Dry', price: 210, category: 'Starters' },
-            { id: 4, name: 'Paneer 65 Crispy', price: 220, category: 'Starters' },
-            { id: 5, name: 'Veg Crispy Lollipop', price: 160, category: 'Starters' },
-            { id: 6, name: 'Mushroom Chilli Dry', price: 230, category: 'Starters' },
-            { id: 7, name: 'Chicken Chilli Dry', price: 260, category: 'Starters' },
-            { id: 8, name: 'Chicken 65 Special', price: 270, category: 'Starters' },
-            { id: 9, name: 'Chicken Lollipop (6 Pcs)', price: 280, category: 'Starters' },
-            { id: 10, name: 'Chicken Tikka Kebab', price: 290, category: 'Starters' },
+            // Veg Categories
+            { id: 1, name: 'Shahi Paneer (Full)', price: 260, category: 'Veg' },
+            { id: 2, name: 'Shahi Paneer (Half)', price: 130, category: 'Veg' },
+            { id: 3, name: 'Mattar Paneer (Full)', price: 220, category: 'Veg' },
+            { id: 4, name: 'Mattar Paneer (Half)', price: 110, category: 'Veg' },
+            { id: 5, name: 'Paneer Do Pyaza (Full)', price: 240, category: 'Veg' },
+            { id: 6, name: 'Paneer Do Pyaza (Half)', price: 120, category: 'Veg' },
+            { id: 7, name: 'Paneer Masala (Full)', price: 240, category: 'Veg' },
+            { id: 8, name: 'Paneer Masala (Half)', price: 120, category: 'Veg' },
+            { id: 9, name: 'Paneer Chilli (Full)', price: 240, category: 'Veg' },
+            { id: 10, name: 'Paneer Chilli (Half)', price: 120, category: 'Veg' },
+            { id: 11, name: 'Palak Paneer (Full)', price: 180, category: 'Veg' },
+            { id: 12, name: 'Palak Paneer (Half)', price: 90, category: 'Veg' },
 
-            // 2. Paneer & Veg Main Course
-            { id: 11, name: 'Kadhai Paneer Special', price: 260, category: 'Veg Main' },
-            { id: 12, name: 'Paneer Butter Masala', price: 240, category: 'Veg Main' },
-            { id: 13, name: 'Shahi Paneer Royal', price: 250, category: 'Veg Main' },
-            { id: 14, name: 'Matar Paneer Classic', price: 210, category: 'Veg Main' },
-            { id: 15, name: 'Paneer Do Pyaza', price: 245, category: 'Veg Main' },
-            { id: 16, name: 'Mix Veg Mughlai', price: 180, category: 'Veg Main' },
-            { id: 17, name: 'Mushroom Masala Curry', price: 230, category: 'Veg Main' },
-            { id: 18, name: 'Malai Kofta Premium', price: 240, category: 'Veg Main' },
-            { id: 19, name: 'Dal Fry Tadka Royal', price: 140, category: 'Veg Main' },
-            { id: 20, name: 'Dal Makhani Shahi', price: 180, category: 'Veg Main' },
+            // Non-Veg Categories
+            { id: 13, name: 'Chicken Do Pyaza (Full)', price: 260, category: 'Non-Veg' },
+            { id: 14, name: 'Chicken Do Pyaza (Half)', price: 130, category: 'Non-Veg' },
+            { id: 15, name: 'Chicken Curry (Full)', price: 180, category: 'Non-Veg' },
+            { id: 16, name: 'Chicken Curry (Half)', price: 90, category: 'Non-Veg' },
+            { id: 17, name: 'Fish Curry (Full)', price: 160, category: 'Non-Veg' },
+            { id: 18, name: 'Fish Curry (Half)', price: 80, category: 'Non-Veg' },
+            { id: 19, name: 'Egg Curry (Full)', price: 120, category: 'Non-Veg' },
+            { id: 20, name: 'Egg Curry (Half)', price: 60, category: 'Non-Veg' },
+            { id: 21, name: 'Omelette Curry (Full)', price: 160, category: 'Non-Veg' },
+            { id: 22, name: 'Omelette Curry (Half)', price: 80, category: 'Non-Veg' },
 
-            // 3. Chicken & Mutton Main Course
-            { id: 21, name: 'Hotel Muskan Spl Chicken', price: 340, category: 'NonVeg Main' },
-            { id: 22, name: 'Kadhai Chicken Spicy', price: 310, category: 'NonVeg Main' },
-            { id: 23, name: 'Butter Chicken Masala', price: 330, category: 'NonVeg Main' },
-            { id: 24, name: 'Chicken Dehat Style (Local)', price: 320, category: 'NonVeg Main' },
-            { id: 25, name: 'Chicken Do Pyaza Mash', price: 295, category: 'NonVeg Main' },
-            { id: 26, name: 'Chicken Curry Classic', price: 280, category: 'NonVeg Main' },
-            { id: 27, name: 'Mutton Handi Special', price: 420, category: 'NonVeg Main' },
-            { id: 28, name: 'Mutton Rogan Josh', price: 440, category: 'NonVeg Main' },
-            { id: 29, name: 'Mutton Curry Desi Style', price: 410, category: 'NonVeg Main' },
-            { id: 30, name: 'Egg Curry Double Plate', price: 150, category: 'NonVeg Main' },
+            // Rice & Meals Categories
+            { id: 23, name: 'Plain Rice (Full)', price: 70, category: 'Rice-Breads' },
+            { id: 24, name: 'Plain Rice (Half)', price: 40, category: 'Rice-Breads' },
+            { id: 25, name: 'Jeera Rice (Full)', price: 80, category: 'Rice-Breads' },
+            { id: 26, name: 'Jeera Rice (Half)', price: 40, category: 'Rice-Breads' },
+            { id: 27, name: 'Sada Khana (Standard Meal)', price: 70, category: 'Rice-Breads' },
+            { id: 28, name: 'Plain Roti', price: 6, category: 'Rice-Breads' },
+            { id: 29, name: 'Butter Roti', price: 12, category: 'Rice-Breads' },
 
-            // 4. Chinese & Fast Food
-            { id: 31, name: 'Veg Hakka Noodles', price: 120, category: 'Chinese Fast' },
-            { id: 32, name: 'Egg Noodles tossed', price: 140, category: 'Chinese Fast' },
-            { id: 33, name: 'Chicken Hakka Noodles', price: 170, category: 'Chinese Fast' },
-            { id: 34, name: 'Veg Fried Rice Master', price: 130, category: 'Chinese Fast' },
-            { id: 35, name: 'Chicken Fried Rice Bowl', price: 180, category: 'Chinese Fast' },
-            { id: 36, name: 'Veg Manchurian Gravy', price: 160, category: 'Chinese Fast' },
-            { id: 37, name: 'Paneer Manchurian Mix', price: 190, category: 'Chinese Fast' },
-            { id: 38, name: 'Veg Cheese Burger', price: 90, category: 'Chinese Fast' },
-            { id: 39, name: 'French Fries Salted', price: 80, category: 'Chinese Fast' },
-
-            // 5. Tandoor & Rice
-            { id: 40, name: 'Sada Tandoori Roti', price: 15, category: 'Roti Rice' },
-            { id: 41, name: 'Butter Tandoori Roti', price: 25, category: 'Roti Rice' },
-            { id: 42, name: 'Plain Naan Premium', price: 40, category: 'Roti Rice' },
-            { id: 43, name: 'Butter Naan Flaky', price: 50, category: 'Roti Rice' },
-            { id: 44, name: 'Garlic Naan Stuffed', price: 65, category: 'Roti Rice' },
-            { id: 45, name: 'Missi Roti Healthy', price: 45, category: 'Roti Rice' },
-            { id: 46, name: 'Plain Basmati Rice', price: 90, category: 'Roti Rice' },
-            { id: 47, name: 'Veg Jeera Rice Premium', price: 120, category: 'Roti Rice' },
-            { id: 48, name: 'Hyderabadi Veg Biryani', price: 210, category: 'Roti Rice' },
-            { id: 49, name: 'Chicken Dum Biryani Handi', price: 280, category: 'Roti Rice' },
-
-            // 6. Beverages & Desserts
-            { id: 50, name: 'Mineral Water (Bisleri)', price: 20, category: 'Drinks Dessert' },
-            { id: 51, name: 'Cold Drink Glass (Assorted)', price: 35, category: 'Drinks Dessert' },
-            { id: 52, name: 'Premium Sweet Lassi', price: 60, category: 'Drinks Dessert' },
-            { id: 53, name: 'Fresh Lime Soda Mix', price: 50, category: 'Drinks Dessert' },
-            { id: 54, name: 'Gulab Jamun (2 Pcs)', price: 40, category: 'Drinks Dessert' },
-            { id: 55, name: 'Vanilla Ice Cream Scoop', price: 50, category: 'Drinks Dessert' },
-            { id: 56, name: 'Sizzling Chocolate Brownie', price: 180, category: 'Drinks Dessert' }
+            // Drinks & Extras Categories
+            { id: 30, name: 'Special Tea', price: 10, category: 'Drinks-Extras' },
+            { id: 31, name: 'Mineral Water', price: 20, category: 'Drinks-Extras' },
+            { id: 32, name: 'Cold Drink', price: 40, category: 'Drinks-Extras' }
         ];
 
         let cart = {};
         let qrcodeInstance = null;
+        let customIdCounter = 5000;
 
         window.onload = () => {
             renderMenu('all');
@@ -274,6 +242,31 @@
             setInterval(update, 1000);
         }
 
+        function addCustomItemToCart() {
+            const nameInput = document.getElementById('customItemName');
+            const priceInput = document.getElementById('customItemPrice');
+            const name = nameInput.value.trim();
+            const price = parseFloat(priceInput.value);
+
+            if (!name || isNaN(price) || price <= 0) {
+                alert("Please enter a valid custom Item Name and Price.");
+                return;
+            }
+
+            customIdCounter++;
+            cart[customIdCounter] = {
+                id: customIdCounter,
+                name: name,
+                price: price,
+                qty: 1,
+                category: 'Custom'
+            };
+
+            nameInput.value = '';
+            priceInput.value = '';
+            updateCartUI();
+        }
+
         function renderMenu(category) {
             const grid = document.getElementById('menuGrid');
             grid.innerHTML = '';
@@ -282,10 +275,10 @@
             
             list.forEach(item => {
                 grid.innerHTML += `
-                    <div onclick="addToCart(${item.id})" class="bg-stone-900 border border-stone-800 p-3.5 rounded-xl hover:border-gold cursor-pointer transition duration-150 transform hover:-translate-y-0.5 flex flex-col justify-between group">
+                    <div onclick="addToCart(${item.id})" class="bg-stone-900 border border-stone-800 p-3.5 rounded-xl hover:border-gold cursor-pointer transition duration-150 flex flex-col justify-between group">
                         <div>
                             <span class="text-[9px] uppercase font-bold tracking-wider text-gold opacity-60">${item.category}</span>
-                            <h3 class="font-bold text-gray-100 mt-0.5 text-xs sm:text-sm tracking-wide group-hover:text-gold transition duration-100 line-clamp-2">${item.name}</h3>
+                            <h3 class="font-bold text-gray-100 mt-0.5 text-xs sm:text-sm tracking-wide group-hover:text-gold transition duration-100">${item.name}</h3>
                         </div>
                         <div class="flex justify-between items-center mt-3">
                             <span class="text-gold font-mono font-bold text-xs sm:text-sm">₹${item.price}</span>
@@ -302,12 +295,10 @@
             buttons.forEach(btn => {
                 const targetText = btn.innerText.toLowerCase();
                 if ((category === 'all' && targetText === 'all menu') ||
-                    (category === 'Starters' && targetText === 'soup & starters') ||
-                    (category === 'Veg Main' && targetText === 'paneer & veg') ||
-                    (category === 'NonVeg Main' && targetText === 'chicken & mutton') ||
-                    (category === 'Chinese Fast' && targetText === 'chinese & fast food') ||
-                    (category === 'Roti Rice' && targetText === 'tandoor & rice') ||
-                    (category === 'Drinks Dessert' && targetText === 'beverages & desserts')) {
+                    (category === 'Veg' && targetText === 'veg specialties') ||
+                    (category === 'Non-Veg' && targetText === 'non-veg curries') ||
+                    (category === 'Rice-Breads' && targetText === 'rice & meals') ||
+                    (category === 'Drinks-Extras' && targetText === 'drinks & extras')) {
                     btn.className = "cat-btn px-4 py-2 bg-gold text-stone-950 font-bold rounded-lg shadow-md whitespace-nowrap transition duration-150 text-xs sm:text-sm";
                 } else {
                     btn.className = "cat-btn px-4 py-2 bg-stone-900 text-gray-300 font-semibold rounded-lg hover:bg-stone-800 border border-stone-800 whitespace-nowrap transition duration-150 text-xs sm:text-sm";
